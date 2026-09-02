@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Choisir sa mouche à saumon</title>
 <meta name="description" content="La fiche de Patrick Blanchet, en application : 31 patrons, leur toilette, leur profil coloré, et le coffre qui est réellement le vôtre. Hors ligne, sans compte.">
-<meta name="theme-color" content="#1d2b2a">
+<meta name="theme-color" content="#16221f">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="assets/icones/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/icones/icone-180.png">
@@ -14,13 +14,17 @@
 <style>
   :root { color-scheme: light dark; }
   body { -webkit-tap-highlight-color: transparent; }
-  .onglet[aria-selected="true"] { color: #fff; background: #2f4a47; }
-  .choix[aria-pressed="true"] { border-color: #c9743a; background: #fbeade; color: #8b4823; }
+  .onglet[aria-selected="true"] { color: #f5f7f5; background: #2b423c; }
+  .choix[aria-pressed="true"] { border-color: #b3281c; background: #fae5e2; color: #7a1a12; }
+  /* Trois états de thème : « système » ne pose aucune marque sur la racine,
+     un choix explicite pose data-theme. Les deux règles couvrent les trois. */
   @media (prefers-color-scheme: dark) {
-    .choix[aria-pressed="true"] { background: #3a2418; color: #eab189; }
+    :root:not([data-theme="light"]) .choix[aria-pressed="true"] { border-color: #962016; background: #3a1512; color: #e29188; }
   }
+  :root[data-theme="dark"] .choix[aria-pressed="true"] { border-color: #962016; background: #3a1512; color: #e29188; }
   .bande { transition: flex-grow .18s ease; }
   .bande:hover, .bande:focus-visible { flex-grow: 2.4; }
+  @media (prefers-reduced-motion: reduce) { .bande { transition: none; } }
   @media print {
     .sans-impression { display: none !important; }
     body { background: #fff !important; color: #000 !important; }
@@ -29,7 +33,7 @@
 </style>
 </head>
 
-<body class="min-h-full bg-sable-50 text-riviere-900 dark:bg-riviere-950 dark:text-sable-100 font-texte antialiased">
+<body class="min-h-full bg-papier-50 text-riviere-900 dark:bg-riviere-950 dark:text-papier-100 font-texte antialiased">
 
 <a href="#principal" class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:m-3 focus:rounded focus:bg-riviere-800 focus:px-4 focus:py-2 focus:text-white">Aller au contenu</a>
 
@@ -57,8 +61,8 @@
   <!-- ═══════════════ CHOISIR ═══════════════ -->
   <section id="v-choisir" role="tabpanel" aria-labelledby="t-choisir">
 
-    <details open class="sans-impression rounded-xl border border-sable-300 bg-sable-100 p-4 text-sm dark:border-riviere-700 dark:bg-riviere-900">
-      <summary class="cursor-pointer font-medium marker:text-cuivre-500">Le ciel dicte la teinte, l'eau dicte la taille.</summary>
+    <details open class="sans-impression rounded-xl border border-papier-300 bg-papier-100 p-4 text-sm dark:border-riviere-700 dark:bg-riviere-900">
+      <summary class="cursor-pointer font-medium marker:text-laque-500">Le ciel dicte la teinte, l'eau dicte la taille.</summary>
       <p class="mt-1.5 text-riviere-700 dark:text-riviere-300">
         C'est la règle de la fiche. Le registre de l'eau y est écrit noir sur blanc, et il est
         repris ici mot pour mot. Le registre du ciel, lui, n'existe pas dans le PDF que vous
@@ -77,7 +81,7 @@
     <div class="sans-impression mt-4" id="bloc-clarte" hidden>
       <h2 class="font-titre text-lg">L'eau est-elle sale&nbsp;?</h2>
       <div class="mt-2 grid grid-cols-2 gap-2" id="choix-clarte"></div>
-      <p id="texte-clarte" class="mt-2 text-sm text-cuivre-700 dark:text-cuivre-300"></p>
+      <p id="texte-clarte" class="mt-2 text-sm text-laque-700 dark:text-laque-300"></p>
     </div>
 
     <!-- Teinte -->
@@ -89,7 +93,7 @@
 
     <!-- Coffre -->
     <label class="sans-impression mt-4 flex cursor-pointer items-center gap-3 rounded-lg border border-riviere-200 bg-white px-3 py-2.5 text-sm dark:border-riviere-700 dark:bg-riviere-900">
-      <input type="checkbox" id="filtre-coffre" class="h-4 w-4 accent-cuivre-500">
+      <input type="checkbox" id="filtre-coffre" class="h-4 w-4 accent-laque-500">
       <span>Seulement ce que j'ai coché dans mon coffre <span id="compte-coffre" class="text-riviere-500"></span></span>
     </label>
 
@@ -105,7 +109,7 @@
     <label class="sans-impression block">
       <span class="sr-only">Chercher un patron</span>
       <input type="search" id="recherche" placeholder="Chercher un nom, un matériau, une rivière…"
-             class="w-full rounded-lg border border-riviere-300 bg-white px-3 py-2.5 text-sm outline-none placeholder:text-riviere-400 focus:border-cuivre-500 dark:border-riviere-700 dark:bg-riviere-900">
+             class="w-full rounded-lg border border-riviere-300 bg-white px-3 py-2.5 text-sm outline-none placeholder:text-riviere-400 focus:border-laque-500 dark:border-riviere-700 dark:bg-riviere-900">
     </label>
     <p class="sans-impression mt-3 text-sm text-riviere-600 dark:text-riviere-300">
       Les trente et un patrons de la fiche, dans son ordre. Le profil coloré est un schéma :
@@ -118,9 +122,9 @@
   <!-- ═══════════════ MON COFFRE ═══════════════ -->
   <section id="v-coffre" role="tabpanel" aria-labelledby="t-coffre" hidden>
 
-    <div class="rounded-xl border border-cuivre-300 bg-cuivre-100 p-4 text-sm dark:border-cuivre-700 dark:bg-cuivre-700/20">
+    <div class="rounded-xl border border-laque-300 bg-laque-100 p-4 text-sm dark:border-laque-700 dark:bg-laque-700/20">
       <p class="font-medium">Ce que la photo permet de dire — et ce qu'elle ne permet pas.</p>
-      <p class="mt-1.5 text-riviere-700 dark:text-sable-200" id="lecture-coffre"></p>
+      <p class="mt-1.5 text-riviere-700 dark:text-papier-200" id="lecture-coffre"></p>
     </div>
 
     <h2 class="mt-6 font-titre text-lg">Le coffre, panneau par panneau</h2>
@@ -151,7 +155,7 @@
       </label>
       <button id="btn-vider" class="rounded-lg border border-riviere-300 px-4 py-2.5 text-sm font-medium hover:bg-riviere-100 dark:border-riviere-700 dark:hover:bg-riviere-800">Tout décocher</button>
     </div>
-    <p id="message-coffre" class="mt-3 text-sm text-cuivre-700 dark:text-cuivre-300" role="status"></p>
+    <p id="message-coffre" class="mt-3 text-sm text-laque-700 dark:text-laque-300" role="status"></p>
   </section>
 
   <!-- ═══════════════ LA FICHE ═══════════════ -->

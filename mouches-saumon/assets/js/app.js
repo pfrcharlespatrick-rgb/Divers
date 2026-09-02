@@ -100,7 +100,7 @@ function profilHtml(m) {
     return '<div class="mt-2.5 flex h-7 items-center justify-center rounded border border-dashed border-riviere-300 text-xs text-riviere-500 dark:border-riviere-700 dark:text-riviere-400">pas de toilette écrite, donc pas de profil</div>';
   }
   const bandes = m.profil.map((p) =>
-    `<button type="button" class="bande flex-1 outline-none focus-visible:ring-2 focus-visible:ring-cuivre-500" style="background:${p.c}" title="${echappe(p.l)}" aria-label="${echappe(p.l)}" data-libelle="${echappe(p.l)}"></button>`
+    `<button type="button" class="bande flex-1 outline-none focus-visible:ring-2 focus-visible:ring-laque-500" style="background:${p.c}" title="${echappe(p.l)}" aria-label="${echappe(p.l)}" data-libelle="${echappe(p.l)}"></button>`
   ).join('');
   return `<div class="mt-2.5"><div class="flex h-7 overflow-hidden rounded ring-1 ring-black/10 dark:ring-white/15">${bandes}</div>
     <p class="mt-1 min-h-[1.1rem] text-xs italic text-riviere-500 dark:text-riviere-400" data-role="legende">Touchez une bande pour lire le matériau.</p></div>`;
@@ -109,7 +109,7 @@ function profilHtml(m) {
 function lienPhotos(m) {
   const q = encodeURIComponent(`mouche à saumon "${m.nom}" fly`);
   return `<a href="https://duckduckgo.com/?iax=images&ia=images&q=${q}" target="_blank" rel="noopener noreferrer"
-    class="sans-impression inline-flex items-center gap-1 text-sm font-medium text-cuivre-600 hover:underline dark:text-cuivre-300">Voir des photographies <span aria-hidden="true">↗</span></a>`;
+    class="sans-impression inline-flex items-center gap-1 text-sm font-medium text-laque-600 hover:underline dark:text-laque-300">Voir des photographies <span aria-hidden="true">↗</span></a>`;
 }
 
 function ficheHtml(m, extra = {}) {
@@ -127,21 +127,21 @@ function ficheHtml(m, extra = {}) {
 
     ${profilHtml(m)}
 
-    ${m.toilette ? `<p class="mt-3 text-sm leading-relaxed text-riviere-800 dark:text-sable-200">${echappe(m.toilette)}</p>` : ''}
+    ${m.toilette ? `<p class="mt-3 text-sm leading-relaxed text-riviere-800 dark:text-papier-200">${echappe(m.toilette)}</p>` : ''}
     ${m.note ? `<p class="mt-2 text-sm italic leading-relaxed text-riviere-600 dark:text-riviere-300">${echappe(m.note)}</p>` : ''}
     ${!m.toilette && !m.note ? `<p class="mt-3 text-sm italic text-riviere-600 dark:text-riviere-300">Patron régional dont la fiche n'a pu vérifier la toilette dans une source fiable. Fiez-vous aux photographies.</p>` : ''}
 
     <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
       ${m.hamecon ? `<span class="text-riviere-700 dark:text-riviere-300">Hameçon n° ${m.hamecon[0]} à ${m.hamecon[1]}</span>` : ''}
-      ${tailles ? `<span class="rounded bg-cuivre-100 px-2 py-0.5 text-xs font-medium text-cuivre-700 dark:bg-cuivre-700/25 dark:text-cuivre-300">ici : n° ${tailles[0]} à ${tailles[1]}</span>` : ''}
-      ${extra.nommeeEauBasse ? `<span class="rounded bg-cuivre-100 px-2 py-0.5 text-xs font-medium text-cuivre-700 dark:bg-cuivre-700/25 dark:text-cuivre-300">nommée par la fiche pour l'eau basse</span>` : ''}
+      ${tailles ? `<span class="rounded bg-laque-100 px-2 py-0.5 text-xs font-medium text-laque-700 dark:bg-laque-700/25 dark:text-laque-300">ici : n° ${tailles[0]} à ${tailles[1]}</span>` : ''}
+      ${extra.nommeeEauBasse ? `<span class="rounded bg-laque-100 px-2 py-0.5 text-xs font-medium text-laque-700 dark:bg-laque-700/25 dark:text-laque-300">nommée par la fiche pour l'eau basse</span>` : ''}
       ${lienPhotos(m)}
     </div>
 
     ${extra.raisons && extra.raisons.length ? `<p class="mt-2 text-xs text-amber-700 dark:text-amber-300">Retenue sous réserve : ${extra.raisons.map(echappe).join(' ; ')}.</p>` : ''}
 
     <label class="sans-impression mt-3 flex cursor-pointer items-center gap-2 border-t border-riviere-100 pt-3 text-sm dark:border-riviere-800">
-      <input type="checkbox" class="h-4 w-4 accent-cuivre-500" data-coffre="${echappe(m.nom)}" ${coche ? 'checked' : ''}>
+      <input type="checkbox" class="h-4 w-4 accent-laque-500" data-coffre="${echappe(m.nom)}" ${coche ? 'checked' : ''}>
       <span>Je l'ai dans mon coffre</span>
     </label>
   </article>`;
@@ -224,7 +224,7 @@ function rendCoffre() {
     const total = p.familles.reduce((s, f) => s + f.n, 0);
     const lignes = p.familles.map((f) => `
       <li class="flex gap-3 border-t border-riviere-100 py-2.5 first:border-0 first:pt-0 dark:border-riviere-800">
-        <span class="mt-0.5 w-7 shrink-0 text-right font-titre text-base tabular-nums text-cuivre-600 dark:text-cuivre-300">${f.n}</span>
+        <span class="mt-0.5 w-7 shrink-0 text-right font-titre text-base tabular-nums text-laque-600 dark:text-laque-300">${f.n}</span>
         <span class="mt-1.5 flex shrink-0 gap-0.5">${f.teintes.map((c) => `<span class="h-3 w-3 rounded-sm ring-1 ring-black/15 dark:ring-white/20" style="background:${c}"></span>`).join('')}</span>
         <span class="min-w-0">
           <span class="block text-sm">${echappe(f.quoi)}</span>
@@ -244,7 +244,7 @@ function rendCoffre() {
   $('#rapprochements').innerHTML = RAPPROCHEMENTS.map((r) => {
     const coche = etat.coffre.has(r.mouche);
     return `<label class="flex cursor-pointer items-start gap-3 rounded-lg border border-riviere-200 bg-white p-3 dark:border-riviere-800 dark:bg-riviere-900">
-      <input type="checkbox" class="mt-1 h-4 w-4 shrink-0 accent-cuivre-500" data-coffre="${echappe(r.mouche)}" ${coche ? 'checked' : ''}>
+      <input type="checkbox" class="mt-1 h-4 w-4 shrink-0 accent-laque-500" data-coffre="${echappe(r.mouche)}" ${coche ? 'checked' : ''}>
       <span class="min-w-0">
         <span class="block text-sm font-medium">${echappe(r.mouche)}</span>
         <span class="block text-sm text-riviere-600 dark:text-riviere-300">${echappe(r.pourquoi)}</span>
@@ -255,7 +255,7 @@ function rendCoffre() {
   $('#inventaire').innerHTML = MOUCHES.map((m) => {
     const coche = etat.coffre.has(m.nom);
     return `<label class="flex cursor-pointer items-center gap-2.5 rounded-lg border border-riviere-200 bg-white px-3 py-2 text-sm dark:border-riviere-800 dark:bg-riviere-900">
-      <input type="checkbox" class="h-4 w-4 shrink-0 accent-cuivre-500" data-coffre="${echappe(m.nom)}" ${coche ? 'checked' : ''}>
+      <input type="checkbox" class="h-4 w-4 shrink-0 accent-laque-500" data-coffre="${echappe(m.nom)}" ${coche ? 'checked' : ''}>
       <span class="truncate">${echappe(m.nom)}</span>
     </label>`;
   }).join('');

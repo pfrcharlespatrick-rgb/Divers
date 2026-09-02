@@ -77,9 +77,15 @@ ouverte, elle fonctionne sans réseau.
 ## Sous le capot
 
 HTML, Tailwind CSS et JavaScript, sans cadre applicatif ni étape de compilation
-à l'usage. La feuille de style est **construite et livrée dans le dépôt**
-(`mouches-saumon/assets/css/app.css`) : aucun CDN n'est appelé, l'application
-démarre donc hors ligne dès la première visite en cache.
+à l'usage. La feuille de style **et les deux polices** sont construites et
+livrées dans le dépôt : aucun CDN n'est appelé, aucune requête ne part vers
+l'extérieur, et l'application démarre hors ligne dès qu'elle est en cache.
+
+Les couleurs viennent du sujet : le vert-noir d'une rivière au crépuscule, le
+blanc froid de la mousse alvéolée du coffre, et le rouge de la tête laquée qui
+signe la série des Rat et la Cosseboom — le seul accent de l'interface, réservé
+à ce que vous choisissez et à ce que l'application répond. Titres en Zilla Slab,
+texte en Public Sans.
 
 ```
 divers/
@@ -92,6 +98,7 @@ divers/
     ├── fiche-source.pdf          la fiche d'origine, conservée
     └── assets/
         ├── css/app.css           Tailwind compilé
+        ├── polices/              Zilla Slab et Public Sans, en woff2
         ├── js/donnees.js         les trente et un patrons
         ├── js/app.js             la logique
         ├── img/                  la photo du coffre et ses deux panneaux

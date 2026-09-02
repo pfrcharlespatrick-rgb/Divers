@@ -5,17 +5,30 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Divers</title>
 <meta name="description" content="Petites applications web autonomes : hors ligne, sans compte, sans serveur.">
-<meta name="theme-color" content="#1d2b2a">
+<meta name="theme-color" content="#16221f">
+<link rel="icon" href="mouches-saumon/assets/icones/favicon.svg" type="image/svg+xml">
 <style>
-  :root { color-scheme: light dark; --fond:#faf7f1; --texte:#1d2b2a; --doux:#4b756e; --carte:#fff; --bord:#e4d7bf; --accent:#c9743a; }
+  @font-face { font-family:"Public Sans"; font-style:normal; font-weight:100 900; font-display:swap;
+    src:url(mouches-saumon/assets/polices/public-sans-var-latin.woff2) format("woff2");
+    unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+  @font-face { font-family:"Public Sans"; font-style:normal; font-weight:100 900; font-display:swap;
+    src:url(mouches-saumon/assets/polices/public-sans-var-latin-ext.woff2) format("woff2");
+    unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF; }
+  @font-face { font-family:"Zilla Slab"; font-style:normal; font-weight:700; font-display:swap;
+    src:url(mouches-saumon/assets/polices/zilla-slab-700-latin.woff2) format("woff2");
+    unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+  @font-face { font-family:"Zilla Slab"; font-style:normal; font-weight:700; font-display:swap;
+    src:url(mouches-saumon/assets/polices/zilla-slab-700-latin-ext.woff2) format("woff2");
+    unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF; }
+  :root { color-scheme: light dark; --fond:#f5f7f5; --texte:#16221f; --doux:#4d6f66; --carte:#fff; --bord:#d8ded9; --accent:#b3281c; }
   @media (prefers-color-scheme: dark) {
-    :root { --fond:#111c1b; --texte:#f2ebdd; --doux:#9bb8b1; --carte:#1d2b2a; --bord:#2f4a47; --accent:#eab189; }
+    :root { --fond:#0e1614; --texte:#e9ede9; --doux:#9ab5ad; --carte:#16221f; --bord:#2b423c; --accent:#e29188; }
   }
   * { box-sizing: border-box; }
   body { margin:0; padding:2.5rem 1.25rem 4rem; background:var(--fond); color:var(--texte);
-         font:16px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+         font:16px/1.6 "Public Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
   main { max-width: 40rem; margin: 0 auto; }
-  h1 { font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif; font-size:2rem; margin:0 0 .35rem; }
+  h1 { font-family:"Zilla Slab",Rockwell,"Roboto Slab",Georgia,serif; font-weight:700; font-size:2rem; margin:0 0 .35rem; }
   .sous { color:var(--doux); margin:0 0 2rem; }
   a.carte { display:flex; gap:1rem; align-items:flex-start; text-decoration:none; color:inherit;
             background:var(--carte); border:1px solid var(--bord); border-radius:14px; padding:1.1rem 1.25rem;
