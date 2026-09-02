@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Choisir sa mouche à saumon</title>
+<meta name="description" content="La fiche de Patrick Blanchet, en application : 31 patrons, leur toilette, leur profil coloré, et le coffre qui est réellement le vôtre. Hors ligne, sans compte.">
+<meta name="theme-color" content="#1d2b2a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/icones/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icones/icone-180.png">
+
+<link rel="stylesheet" href="assets/css/app.css">
+<style>
+  :root { color-scheme: light dark; }
+  body { -webkit-tap-highlight-color: transparent; }
+  .onglet[aria-selected="true"] { color: #fff; background: #2f4a47; }
+  .choix[aria-pressed="true"] { border-color: #c9743a; background: #fbeade; color: #8b4823; }
+  @media (prefers-color-scheme: dark) {
+    .choix[aria-pressed="true"] { background: #3a2418; color: #eab189; }
+  }
+  .bande { transition: flex-grow .18s ease; }
+  .bande:hover, .bande:focus-visible { flex-grow: 2.4; }
+  @media print {
+    .sans-impression { display: none !important; }
+    body { background: #fff !important; color: #000 !important; }
+    .fiche-mouche { break-inside: avoid; border-color: #bbb !important; }
+  }
+</style>
+</head>
+
+<body class="min-h-full bg-sable-50 text-riviere-900 dark:bg-riviere-950 dark:text-sable-100 font-texte antialiased">
+
+<a href="#principal" class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:m-3 focus:rounded focus:bg-riviere-800 focus:px-4 focus:py-2 focus:text-white">Aller au contenu</a>
+
+<header class="border-b border-riviere-200 bg-white/70 backdrop-blur dark:border-riviere-800 dark:bg-riviere-900/70">
+  <div class="mx-auto max-w-4xl px-4 pt-5 pb-3">
+    <h1 class="font-titre text-2xl leading-tight sm:text-3xl">Choisir sa mouche à saumon</h1>
+    <p class="mt-1 text-sm text-riviere-600 dark:text-riviere-300">
+      D'après la fiche plastifiée de Patrick Blanchet. Trente et un patrons, leur toilette,
+      leur profil coloré — et votre coffre.
+    </p>
+  </div>
+
+  <nav class="sans-impression mx-auto max-w-4xl px-2 pb-2" aria-label="Sections">
+    <div role="tablist" class="flex gap-1 overflow-x-auto rounded-xl bg-riviere-100 p-1 dark:bg-riviere-800/60">
+      <button role="tab" id="t-choisir"   aria-controls="v-choisir"   aria-selected="true"  class="onglet flex-1 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition">Choisir</button>
+      <button role="tab" id="t-catalogue" aria-controls="v-catalogue" aria-selected="false" class="onglet flex-1 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition">Catalogue</button>
+      <button role="tab" id="t-coffre"    aria-controls="v-coffre"    aria-selected="false" class="onglet flex-1 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition">Mon coffre</button>
+      <button role="tab" id="t-fiche"     aria-controls="v-fiche"     aria-selected="false" class="onglet flex-1 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition">La fiche</button>
+    </div>
+  </nav>
+</header>
+
+<main id="principal" class="mx-auto max-w-4xl px-4 pb-24 pt-5">
+
+  <!-- ═══════════════ CHOISIR ═══════════════ -->
+  <section id="v-choisir" role="tabpanel" aria-labelledby="t-choisir">
+
+    <details open class="sans-impression rounded-xl border border-sable-300 bg-sable-100 p-4 text-sm dark:border-riviere-700 dark:bg-riviere-900">
+      <summary class="cursor-pointer font-medium marker:text-cuivre-500">Le ciel dicte la teinte, l'eau dicte la taille.</summary>
+      <p class="mt-1.5 text-riviere-700 dark:text-riviere-300">
+        C'est la règle de la fiche. Le registre de l'eau y est écrit noir sur blanc, et il est
+        repris ici mot pour mot. Le registre du ciel, lui, n'existe pas dans le PDF que vous
+        m'avez donné : la table qui associe un temps à une teinte n'y figure pas.
+        <strong class="font-medium">Cette application ne l'invente pas.</strong>
+        Le choix de la teinte vous revient donc — la fiche ne tranche qu'un cas, et il est câblé plus bas.
+      </p>
+    </details>
+
+    <!-- Niveau d'eau -->
+    <h2 class="mt-6 font-titre text-lg">Le niveau de l'eau</h2>
+    <div class="sans-impression mt-2 grid grid-cols-3 gap-2" id="choix-niveau"></div>
+    <p id="texte-niveau" class="mt-2.5 rounded-lg bg-riviere-100 px-3 py-2.5 text-sm dark:bg-riviere-800/60"></p>
+
+    <!-- Clarté -->
+    <div class="sans-impression mt-4" id="bloc-clarte" hidden>
+      <h2 class="font-titre text-lg">L'eau est-elle sale&nbsp;?</h2>
+      <div class="mt-2 grid grid-cols-2 gap-2" id="choix-clarte"></div>
+      <p id="texte-clarte" class="mt-2 text-sm text-cuivre-700 dark:text-cuivre-300"></p>
+    </div>
+
+    <!-- Teinte -->
+    <h2 class="mt-6 font-titre text-lg">La teinte</h2>
+    <p class="text-sm text-riviere-600 dark:text-riviere-300">
+      Déduite de la toilette écrite sur la fiche, pas d'une table de correspondance.
+    </p>
+    <div class="sans-impression mt-2 grid grid-cols-2 gap-2 sm:grid-cols-5" id="choix-teinte"></div>
+
+    <!-- Coffre -->
+    <label class="sans-impression mt-4 flex cursor-pointer items-center gap-3 rounded-lg border border-riviere-200 bg-white px-3 py-2.5 text-sm dark:border-riviere-700 dark:bg-riviere-900">
+      <input type="checkbox" id="filtre-coffre" class="h-4 w-4 accent-cuivre-500">
+      <span>Seulement ce que j'ai coché dans mon coffre <span id="compte-coffre" class="text-riviere-500"></span></span>
+    </label>
+
+    <div class="mt-6 flex items-baseline justify-between border-t border-riviere-200 pt-4 dark:border-riviere-800">
+      <h2 class="font-titre text-lg">Les patrons retenus</h2>
+      <p id="compte-resultats" class="text-sm text-riviere-500 dark:text-riviere-400"></p>
+    </div>
+    <div id="resultats" class="mt-3 space-y-3"></div>
+  </section>
+
+  <!-- ═══════════════ CATALOGUE ═══════════════ -->
+  <section id="v-catalogue" role="tabpanel" aria-labelledby="t-catalogue" hidden>
+    <label class="sans-impression block">
+      <span class="sr-only">Chercher un patron</span>
+      <input type="search" id="recherche" placeholder="Chercher un nom, un matériau, une rivière…"
+             class="w-full rounded-lg border border-riviere-300 bg-white px-3 py-2.5 text-sm outline-none placeholder:text-riviere-400 focus:border-cuivre-500 dark:border-riviere-700 dark:bg-riviere-900">
+    </label>
+    <p class="sans-impression mt-3 text-sm text-riviere-600 dark:text-riviere-300">
+      Les trente et un patrons de la fiche, dans son ordre. Le profil coloré est un schéma :
+      il rend la signature de teintes du patron, pas la texture des matériaux.
+      Touchez une bande pour lire le matériau qu'elle représente.
+    </p>
+    <div id="catalogue" class="mt-4 space-y-3"></div>
+  </section>
+
+  <!-- ═══════════════ MON COFFRE ═══════════════ -->
+  <section id="v-coffre" role="tabpanel" aria-labelledby="t-coffre" hidden>
+
+    <div class="rounded-xl border border-cuivre-300 bg-cuivre-100 p-4 text-sm dark:border-cuivre-700 dark:bg-cuivre-700/20">
+      <p class="font-medium">Ce que la photo permet de dire — et ce qu'elle ne permet pas.</p>
+      <p class="mt-1.5 text-riviere-700 dark:text-sable-200" id="lecture-coffre"></p>
+    </div>
+
+    <h2 class="mt-6 font-titre text-lg">Le coffre, panneau par panneau</h2>
+    <p class="mt-1 text-sm text-riviere-600 dark:text-riviere-300">
+      Un relevé visuel : famille de montage, teintes dominantes, nombre approximatif.
+      Aucun nom n'est avancé — une photo n'en donne pas.
+    </p>
+    <div id="panneaux" class="mt-4 space-y-6"></div>
+
+    <h2 class="mt-8 font-titre text-lg">Pistes à confirmer</h2>
+    <p class="mt-1 text-sm text-riviere-600 dark:text-riviere-300">
+      Les seuls rapprochements que la photo autorise avec la fiche. Rien n'est coché d'avance.
+    </p>
+    <div id="rapprochements" class="mt-3 space-y-2"></div>
+
+    <h2 class="mt-8 font-titre text-lg">Mon inventaire</h2>
+    <p class="mt-1 text-sm text-riviere-600 dark:text-riviere-300">
+      Cochez les patrons que vous possédez vraiment. La liste sert ensuite de filtre dans
+      l'onglet <em>Choisir</em>. Tout reste sur cet appareil.
+    </p>
+    <div id="inventaire" class="mt-3 grid gap-1.5 sm:grid-cols-2"></div>
+
+    <div class="sans-impression mt-6 flex flex-wrap gap-2">
+      <button id="btn-sauvegarde" class="rounded-lg bg-riviere-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-riviere-600">Sauvegarder mon coffre (.json)</button>
+      <label class="cursor-pointer rounded-lg border border-riviere-300 px-4 py-2.5 text-sm font-medium hover:bg-riviere-100 dark:border-riviere-700 dark:hover:bg-riviere-800">
+        Restaurer un fichier
+        <input type="file" id="btn-restaure" accept="application/json,.json" class="sr-only">
+      </label>
+      <button id="btn-vider" class="rounded-lg border border-riviere-300 px-4 py-2.5 text-sm font-medium hover:bg-riviere-100 dark:border-riviere-700 dark:hover:bg-riviere-800">Tout décocher</button>
+    </div>
+    <p id="message-coffre" class="mt-3 text-sm text-cuivre-700 dark:text-cuivre-300" role="status"></p>
+  </section>
+
+  <!-- ═══════════════ LA FICHE ═══════════════ -->
+  <section id="v-fiche" role="tabpanel" aria-labelledby="t-fiche" hidden class="space-y-6 text-sm leading-relaxed">
+
+    <div>
+      <h2 class="font-titre text-lg">D'où vient tout ceci</h2>
+      <p class="mt-2 text-riviere-700 dark:text-riviere-300">
+        De la fiche plastifiée <em>Choisir sa mouche à saumon</em>, de Patrick Blanchet, dont le PDF
+        a servi de source unique. Les toilettes, les origines, les numéros d'hameçon et les réserves
+        sont repris tels quels. Rien n'a été ajouté à partir d'ailleurs.
+      </p>
+    </div>
+
+    <div>
+      <h2 class="font-titre text-lg">Les réserves de la fiche</h2>
+      <p class="mt-2 text-riviere-700 dark:text-riviere-300">
+        « Les montages marqués d'une réserve varient d'un monteur et d'une rivière à l'autre, ou n'ont
+        pas de recette publiée que j'aie pu vérifier. Fiez-vous alors aux photographies. »
+      </p>
+      <ul class="mt-3 space-y-1.5">
+        <li class="flex gap-2"><span class="mt-0.5 shrink-0 rounded bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-900 dark:bg-amber-900/40 dark:text-amber-200">toilette non vérifiée</span><span class="text-riviere-700 dark:text-riviere-300">La fiche n'a pas trouvé de recette fiable. Neuf patrons québécois et maritimes sont dans ce cas.</span></li>
+        <li class="flex gap-2"><span class="mt-0.5 shrink-0 rounded bg-riviere-100 px-1.5 py-0.5 text-xs font-medium text-riviere-700 dark:bg-riviere-800 dark:text-riviere-200">montage courant</span><span class="text-riviere-700 dark:text-riviere-300">La toilette est donnée, mais les variantes sont fréquentes.</span></li>
+        <li class="flex gap-2"><span class="mt-0.5 shrink-0 rounded bg-emerald-100 px-1.5 py-0.5 text-xs font-medium text-emerald-900 dark:bg-emerald-900/40 dark:text-emerald-200">toilette vérifiée</span><span class="text-riviere-700 dark:text-riviere-300">Recoupée par la fiche auprès d'une source nommée, citée plus bas.</span></li>
+        <li class="flex gap-2"><span class="mt-0.5 shrink-0 rounded bg-riviere-100 px-1.5 py-0.5 text-xs font-medium text-riviere-700 dark:bg-riviere-800 dark:text-riviere-200">sans toilette</span><span class="text-riviere-700 dark:text-riviere-300">Nommé par la fiche sous « eau basse », sans recette. L'application ne lui en attribue aucune.</span></li>
+      </ul>
+    </div>
+
+    <div>
+      <h2 class="font-titre text-lg">Ce que l'application ajoute, et ce qu'elle refuse d'ajouter</h2>
+      <dl class="mt-2 space-y-3">
+        <div>
+          <dt class="font-medium">Le profil coloré — déduit</dt>
+          <dd class="text-riviere-700 dark:text-riviere-300">Chaque bande est un matériau nommé dans la toilette, rendu par sa couleur. Là où la fiche ne donne pas de toilette, il n'y a pas de profil.</dd>
+        </div>
+        <div>
+          <dt class="font-medium">La fenêtre de tailles — interprétée</dt>
+          <dd class="text-riviere-700 dark:text-riviere-300">La fiche dit « petite », « moyenne », « grosse » sans chiffrer. L'application pose une échelle unique — petite = n° 10 à 16, moyenne = n° 6 à 8, grosse = n° 2 à 4 — et en tire les trois fenêtres. C'est une lecture, signalée comme telle.</dd>
+        </div>
+        <div>
+          <dt class="font-medium">La table du ciel — absente</dt>
+          <dd class="text-riviere-700 dark:text-riviere-300">La fiche annonce « touchez les conditions du jour », mais le PDF fourni est une impression : les boutons de conditions n'y ont pas survécu. Aucune table ciel → teinte n'a donc été reconstituée. Si vous avez la fiche plastifiée sous les yeux, dictez-moi ces correspondances et je les branche.</dd>
+        </div>
+        <div>
+          <dt class="font-medium">Les noms dans le coffre — non identifiés</dt>
+          <dd class="text-riviere-700 dark:text-riviere-300">La photo donne des familles, des teintes et des tailles. Elle ne donne pas de noms. L'onglet <em>Mon coffre</em> décrit ce qu'il voit et vous laisse nommer.</dd>
+        </div>
+      </dl>
+    </div>
+
+    <div>
+      <h2 class="font-titre text-lg">Sources citées par la fiche</h2>
+      <p class="mt-2 text-riviere-700 dark:text-riviere-300">
+        Toilettes vérifiées pour la Silver Rat, la Rusty Rat, la Cosseboom, la Godbout et la Black Dose
+        d'après Frédéric Lévesque, <em>Salmo Salar</em> n° 16, avril 1989, repris par Fabri-Mouches.ca.
+        Origine de la Pompier d'après Pierre Saumur, même source.
+      </p>
+    </div>
+
+    <div class="sans-impression rounded-xl border border-riviere-200 p-4 dark:border-riviere-800">
+      <h2 class="font-titre text-lg">Sur cet appareil</h2>
+      <p class="mt-2 text-riviere-700 dark:text-riviere-300">
+        Pas de compte, pas de serveur, pas de traceur. Votre inventaire est écrit dans la mémoire du
+        navigateur (<code class="rounded bg-riviere-100 px-1 dark:bg-riviere-800">localStorage</code>),
+        sur cet appareil seulement. Une fois la page ouverte, elle fonctionne sans réseau.
+        Vider les données du navigateur efface l'inventaire — d'où le bouton de sauvegarde.
+      </p>
+      <button id="btn-imprimer" class="mt-3 rounded-lg border border-riviere-300 px-4 py-2.5 text-sm font-medium hover:bg-riviere-100 dark:border-riviere-700 dark:hover:bg-riviere-800">Imprimer la sélection courante</button>
+    </div>
+  </section>
+</main>
+
+<footer class="sans-impression border-t border-riviere-200 py-6 text-center text-xs text-riviere-500 dark:border-riviere-800 dark:text-riviere-400">
+  Fiche de Patrick Blanchet · application hors ligne, sans compte
+</footer>
+
+<script src="assets/js/donnees.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

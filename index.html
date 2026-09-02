@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Divers</title>
+<meta name="description" content="Petites applications web autonomes : hors ligne, sans compte, sans serveur.">
+<meta name="theme-color" content="#1d2b2a">
+<style>
+  :root { color-scheme: light dark; --fond:#faf7f1; --texte:#1d2b2a; --doux:#4b756e; --carte:#fff; --bord:#e4d7bf; --accent:#c9743a; }
+  @media (prefers-color-scheme: dark) {
+    :root { --fond:#111c1b; --texte:#f2ebdd; --doux:#9bb8b1; --carte:#1d2b2a; --bord:#2f4a47; --accent:#eab189; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; padding:2.5rem 1.25rem 4rem; background:var(--fond); color:var(--texte);
+         font:16px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 40rem; margin: 0 auto; }
+  h1 { font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif; font-size:2rem; margin:0 0 .35rem; }
+  .sous { color:var(--doux); margin:0 0 2rem; }
+  a.carte { display:flex; gap:1rem; align-items:flex-start; text-decoration:none; color:inherit;
+            background:var(--carte); border:1px solid var(--bord); border-radius:14px; padding:1.1rem 1.25rem;
+            transition:border-color .15s ease, transform .15s ease; }
+  a.carte:hover { border-color:var(--accent); transform:translateY(-1px); }
+  a.carte img { width:52px; height:52px; border-radius:12px; flex:none; }
+  .titre { font-weight:600; font-size:1.05rem; }
+  .desc { color:var(--doux); font-size:.925rem; margin-top:.15rem; }
+  footer { max-width:40rem; margin:3rem auto 0; color:var(--doux); font-size:.85rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Divers</h1>
+  <p class="sous">Petites applications web autonomes. Hors ligne, sans compte, sans serveur.</p>
+
+  <a class="carte" href="mouches-saumon/">
+    <img src="mouches-saumon/assets/icones/icone-192.png" alt="">
+    <span>
+      <span class="titre">Choisir sa mouche à saumon</span>
+      <span class="desc">La fiche de Patrick Blanchet en application : trente et un patrons, leur toilette,
+      leur profil coloré, le registre de l'eau — et l'inventaire de votre coffre.</span>
+    </span>
+  </a>
+</main>
+<footer>Tout tourne dans le navigateur. Aucune donnée ne quitte l'appareil.</footer>
+</body>
+</html>
