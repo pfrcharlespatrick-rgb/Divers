@@ -380,3 +380,31 @@ const RAPPROCHEMENTS = [
 ];
 
 const LECTURE_COFFRE = "L'essentiel de ce coffre est fait de Bombers, de streamers et de sèches — des montages que la fiche de Patrick Blanchet ne couvre pas, puisqu'elle traite des noyées classiques à aile de poil et de plume. Les recoupements possibles se comptent sur les doigts d'une main, et aucun n'est certain à partir d'une photo. D'où le principe de cet onglet : il vous montre ce qu'il voit, vous nommez.";
+
+/* ─────────────── Troisième registre : le type d'eau ───────────────
+ *
+ * La fiche n'en dit rien. Absolument rien : c'est une fiche de rivière à
+ * saumon, elle traite du niveau de l'eau et de la teinte, jamais du courant ni
+ * des lacs. Aucune table n'a donc été inventée pour la combler.
+ *
+ * Ce registre est le vôtre. Aucun patron n'arrive marqué ; vous marquez les
+ * vôtres au fil des sorties, et un patron non marqué n'est jamais écarté — il
+ * est seulement rangé sous ceux que vous avez marqués.
+ */
+const TYPES_EAU = {
+  calme: {
+    libelle: 'Rivière calme',
+    court: 'calme',
+    note: "Fosse lente, courant faible. Le saumon voit la mouche longtemps et de près."
+  },
+  rapide: {
+    libelle: 'Rivière rapide',
+    court: 'rapide',
+    note: "Courant vif, eau brisée. La mouche passe vite et se voit mal."
+  },
+  lac: {
+    libelle: 'Lac',
+    court: 'lac',
+    note: "Hors du champ de la fiche, qui ne traite que des rivières à saumon."
+  }
+};

@@ -12,7 +12,9 @@ const etat = {
   teintes: new Set(),
   filtreCoffre: false,
   recherche: '',
-  coffre: new Set()
+  coffre: new Set(),
+  typeEau: null,          // null = tous les types
+  marques: new Map()      // nom de mouche → Set de types d'eau, marqués par vous
 };
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -24,14 +26,31 @@ const echappe = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<'
 function charge() {
   try {
     const brut = localStorage.getItem(CLE);
-    if (brut) etat.coffre = new Set(JSON.parse(brut).coffre || []);
+    if (!brut) return;
+    const d = JSON.parse(brut);
+    etat.coffre = new Set(d.coffre || []);
+    for (const [nom, types] of Object.entries(d.marques || {})) {
+      etat.marques.set(nom, new Set(types));
+    }
   } catch (e) { /* mémoire indisponible : on continue sans */ }
 }
 
 function enregistre() {
   try {
-    localStorage.setItem(CLE, JSON.stringify({ coffre: [...etat.coffre], version: 1 }));
+    localStorage.setItem(CLE, JSON.stringify({ version: 2, coffre: [...etat.coffre], marques: marquesEnObjet() }));
   } catch (e) { /* navigation privée, quota : on continue sans */ }
+}
+
+/* Les marques du troisième registre, sous une forme que JSON accepte. */
+function marquesEnObjet() {
+  const o = {};
+  for (const [nom, types] of etat.marques) if (types.size) o[nom] = [...types];
+  return o;
+}
+
+function estMarquee(mouche, type) {
+  const types = etat.marques.get(mouche.nom);
+  return Boolean(types && types.has(type));
 }
 
 /* ─────────────── Tailles ─────────────── */
@@ -79,7 +98,11 @@ function selection() {
       else if (!teintesVoulues.has(m.teinte)) continue;
     }
 
-    (raisons.length ? ecartees : retenues).push({ m, raisons, nommeeEauBasse });
+    // Registre du type d'eau : il ne retire personne, il fait remonter les
+    // patrons que vous avez marqués. Un patron non marqué reste disponible.
+    const marquee = etat.typeEau ? estMarquee(m, etat.typeEau) : false;
+
+    (raisons.length ? ecartees : retenues).push({ m, raisons, nommeeEauBasse, marquee });
   }
 
   return { retenues, ecartees, eauSale, niveau };
@@ -140,10 +163,19 @@ function ficheHtml(m, extra = {}) {
 
     ${extra.raisons && extra.raisons.length ? `<p class="mt-2 text-xs text-amber-700 dark:text-amber-300">Retenue sous réserve : ${extra.raisons.map(echappe).join(' ; ')}.</p>` : ''}
 
-    <label class="sans-impression mt-3 flex cursor-pointer items-center gap-2 border-t border-riviere-100 pt-3 text-sm dark:border-riviere-800">
-      <input type="checkbox" class="h-4 w-4 accent-laque-500" data-coffre="${echappe(m.nom)}" ${coche ? 'checked' : ''}>
-      <span>Je l'ai dans mon coffre</span>
-    </label>
+    <div class="sans-impression mt-3 space-y-2 border-t border-riviere-100 pt-3 dark:border-riviere-800">
+      <label class="flex cursor-pointer items-center gap-2 text-sm">
+        <input type="checkbox" class="h-4 w-4 accent-laque-500" data-coffre="${echappe(m.nom)}" ${coche ? 'checked' : ''}>
+        <span>Je l'ai dans mon coffre</span>
+      </label>
+      <div class="flex flex-wrap items-center gap-1.5">
+        <span class="text-xs text-riviere-500 dark:text-riviere-400">Je la pêche en&nbsp;:</span>
+        ${Object.entries(TYPES_EAU).map(([cle, t]) => `<button type="button"
+            class="etiquette rounded-full border border-riviere-200 px-2.5 py-1 text-xs transition dark:border-riviere-700"
+            data-marque="${cle}" data-mouche="${echappe(m.nom)}"
+            aria-pressed="${estMarquee(m, cle)}">${echappe(t.libelle.toLowerCase())}</button>`).join('')}
+      </div>
+    </div>
   </article>`;
 }
 
@@ -165,6 +197,13 @@ function rendChoix() {
        data-teinte="${cle}" aria-pressed="${etat.teintes.has(cle)}" title="${echappe(t.desc)}">
        <span class="h-3.5 w-3.5 shrink-0 rounded-full ring-1 ring-black/20 dark:ring-white/25" style="background:${t.puce}"></span>${echappe(t.libelle)}</button>`
   ).join('');
+  $('#choix-type').innerHTML = Object.entries(TYPES_EAU).map(([cle, t]) =>
+    `<button type="button" class="choix rounded-lg border-2 border-riviere-200 bg-white px-3 py-2.5 text-sm font-medium transition dark:border-riviere-700 dark:bg-riviere-900"
+       data-type="${cle}" aria-pressed="${etat.typeEau === cle}">${echappe(t.libelle)}</button>`
+  ).join('') +
+    `<button type="button" class="choix rounded-lg border-2 border-riviere-200 bg-white px-3 py-2.5 text-sm font-medium transition dark:border-riviere-700 dark:bg-riviere-900"
+       data-type="tous" aria-pressed="${etat.typeEau === null}">Tous</button>`;
+
   $('#choix-teinte').innerHTML = boutonsTeinte +
     `<button type="button" class="choix rounded-lg border-2 border-riviere-200 bg-white px-3 py-2.5 text-sm font-medium transition dark:border-riviere-700 dark:bg-riviere-900"
        data-teinte="toutes" aria-pressed="${etat.teintes.size === 0}">Toutes</button>`;
@@ -184,12 +223,41 @@ function rendResultats() {
     : '';
 
   $('#compte-coffre').textContent = etat.coffre.size ? `(${etat.coffre.size})` : '(vide)';
-  $('#compte-resultats').textContent = `${retenues.length} retenu${retenues.length > 1 ? 's' : ''}`;
+  const marquees = etat.typeEau ? retenues.filter((r) => r.marquee).length : 0;
+  $('#compte-resultats').textContent = etat.typeEau
+    ? `${marquees} marqué${marquees > 1 ? 's' : ''} sur ${retenues.length} retenu${retenues.length > 1 ? 's' : ''}`
+    : `${retenues.length} retenu${retenues.length > 1 ? 's' : ''}`;
+
+  $('#texte-type').textContent = etat.typeEau ? TYPES_EAU[etat.typeEau].note : '';
 
   const fenetre = niveau.fenetre;
-  let html = retenues.length
-    ? retenues.map(({ m, nommeeEauBasse }) => ficheHtml(m, { fenetre, nommeeEauBasse })).join('')
-    : `<p class="rounded-lg border border-dashed border-riviere-300 p-6 text-center text-sm text-riviere-500 dark:border-riviere-700 dark:text-riviere-400">Aucun patron ne répond à ces conditions. Élargissez la teinte, ou décochez le filtre du coffre.</p>`;
+  const carte = ({ m, nommeeEauBasse }) => ficheHtml(m, { fenetre, nommeeEauBasse });
+
+  let html;
+  if (!retenues.length) {
+    html = `<p class="rounded-lg border border-dashed border-riviere-300 p-6 text-center text-sm text-riviere-500 dark:border-riviere-700 dark:text-riviere-400">Aucun patron ne répond à ces conditions. Élargissez la teinte, ou décochez le filtre du coffre.</p>`;
+  } else if (etat.typeEau) {
+    // Le type d'eau range en deux tas, il n'en jette aucun.
+    const t = TYPES_EAU[etat.typeEau];
+    const miennes = retenues.filter((r) => r.marquee);
+    const autres = retenues.filter((r) => !r.marquee);
+    const titre = (txt, n) => `<h3 class="mt-1 flex items-baseline justify-between gap-3 font-titre text-base">
+        <span>${txt}</span><span class="font-texte text-sm font-normal tabular-nums text-riviere-500 dark:text-riviere-400">${n}</span></h3>`;
+
+    html = miennes.length
+      ? titre(`Ce que vous pêchez en ${echappe(t.libelle.toLowerCase())}`, miennes.length) +
+        `<div class="mt-2 space-y-3">${miennes.map(carte).join('')}</div>`
+      : `<p class="rounded-lg border border-dashed border-laque-300 p-4 text-sm text-riviere-700 dark:border-laque-700 dark:text-riviere-300">
+           Vous n'avez encore marqué aucun patron pour « ${echappe(t.libelle.toLowerCase())} ».
+           Sur chaque fiche ci-dessous, l'étiquette <em>${echappe(t.libelle.toLowerCase())}</em> le fait entrer ici.</p>`;
+
+    if (autres.length) {
+      html += titre('Les autres, non marqués', autres.length) +
+        `<div class="mt-2 space-y-3">${autres.map(carte).join('')}</div>`;
+    }
+  } else {
+    html = retenues.map(carte).join('');
+  }
 
   if (ecartees.length) {
     html += `<details class="sans-impression rounded-xl border border-dashed border-riviere-300 p-4 dark:border-riviere-700">
@@ -279,7 +347,7 @@ function montre(vue) {
 /* ─────────────── Sauvegarde ─────────────── */
 
 function sauvegarde() {
-  const contenu = JSON.stringify({ application: 'choisir-sa-mouche-a-saumon', version: 1, date: new Date().toISOString(), coffre: [...etat.coffre] }, null, 2);
+  const contenu = JSON.stringify({ application: 'choisir-sa-mouche-a-saumon', version: 2, date: new Date().toISOString(), coffre: [...etat.coffre], marques: marquesEnObjet() }, null, 2);
   const blob = new Blob([contenu], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -298,6 +366,10 @@ function restaure(fichier) {
       const connus = new Set(MOUCHES.map((m) => m.nom));
       const gardes = donnees.coffre.filter((n) => connus.has(n));
       etat.coffre = new Set(gardes);
+      etat.marques = new Map();
+      for (const [nom, types] of Object.entries(donnees.marques || {})) {
+        if (connus.has(nom)) etat.marques.set(nom, new Set(types.filter((t) => t in TYPES_EAU)));
+      }
       enregistre();
       rendCoffre(); rendResultats();
       const ignores = donnees.coffre.length - gardes.length;
@@ -340,6 +412,28 @@ function branche() {
       return;
     }
 
+    const type = ev.target.closest('[data-type]');
+    if (type) {
+      etat.typeEau = type.dataset.type === 'tous' ? null : type.dataset.type;
+      rendChoix(); rendResultats();
+      return;
+    }
+
+    const marque = ev.target.closest('[data-marque]');
+    if (marque) {
+      const { mouche, marque: t } = marque.dataset;
+      const types = etat.marques.get(mouche) || new Set();
+      types.has(t) ? types.delete(t) : types.add(t);
+      types.size ? etat.marques.set(mouche, types) : etat.marques.delete(mouche);
+      enregistre();
+      // Toutes les étiquettes de cette mouche restent d'accord entre elles.
+      for (const autre of $$(`[data-marque="${t}"][data-mouche="${CSS.escape(mouche)}"]`)) {
+        autre.setAttribute('aria-pressed', String(types.has(t)));
+      }
+      if (etat.vue === 'choisir' && etat.typeEau) rendResultats();
+      return;
+    }
+
     const bande = ev.target.closest('.bande');
     if (bande) {
       const legende = bande.closest('div').parentElement.querySelector('[data-role="legende"]');
@@ -370,8 +464,8 @@ function branche() {
   $('#btn-vider').addEventListener('click', () => {
     if (!etat.coffre.size) return message('Le coffre est déjà vide.');
     if (!confirm('Décocher tous les patrons de votre coffre ?')) return;
-    etat.coffre.clear(); enregistre(); rendCoffre(); rendResultats();
-    message('Coffre vidé.');
+    etat.coffre.clear(); etat.marques.clear(); enregistre(); rendCoffre(); rendResultats();
+    message('Coffre vidé, marques comprises.');
   });
 }
 

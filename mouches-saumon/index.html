@@ -16,12 +16,17 @@
   body { -webkit-tap-highlight-color: transparent; }
   .onglet[aria-selected="true"] { color: #f5f7f5; background: #2b423c; }
   .choix[aria-pressed="true"] { border-color: #b3281c; background: #fae5e2; color: #7a1a12; }
+  .etiquette[aria-pressed="true"] { border-color: #b3281c; background: #fae5e2; color: #7a1a12; font-weight: 500; }
   /* Trois états de thème : « système » ne pose aucune marque sur la racine,
      un choix explicite pose data-theme. Les deux règles couvrent les trois. */
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) .choix[aria-pressed="true"] { border-color: #962016; background: #3a1512; color: #e29188; }
   }
   :root[data-theme="dark"] .choix[aria-pressed="true"] { border-color: #962016; background: #3a1512; color: #e29188; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .etiquette[aria-pressed="true"] { border-color: #962016; background: #3a1512; color: #e29188; }
+  }
+  :root[data-theme="dark"] .etiquette[aria-pressed="true"] { border-color: #962016; background: #3a1512; color: #e29188; }
   .bande { transition: flex-grow .18s ease; }
   .bande:hover, .bande:focus-visible { flex-grow: 2.4; }
   @media (prefers-reduced-motion: reduce) { .bande { transition: none; } }
@@ -91,6 +96,16 @@
     </p>
     <div class="sans-impression mt-2 grid grid-cols-2 gap-2 sm:grid-cols-5" id="choix-teinte"></div>
 
+    <!-- Type d'eau -->
+    <h2 class="mt-6 font-titre text-lg">Le type d'eau</h2>
+    <p class="text-sm text-riviere-600 dark:text-riviere-300">
+      Ce registre est le vôtre, pas celui de la fiche : elle ne traite que des rivières à saumon et
+      ne dit rien du courant ni des lacs. Marquez vos patrons sur leur fiche, ils remonteront ici.
+      Un patron non marqué n'est jamais écarté.
+    </p>
+    <div class="sans-impression mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4" id="choix-type"></div>
+    <p id="texte-type" class="mt-2 text-sm text-riviere-600 dark:text-riviere-300"></p>
+
     <!-- Coffre -->
     <label class="sans-impression mt-4 flex cursor-pointer items-center gap-3 rounded-lg border border-riviere-200 bg-white px-3 py-2.5 text-sm dark:border-riviere-700 dark:bg-riviere-900">
       <input type="checkbox" id="filtre-coffre" class="h-4 w-4 accent-laque-500">
@@ -143,7 +158,8 @@
     <h2 class="mt-8 font-titre text-lg">Mon inventaire</h2>
     <p class="mt-1 text-sm text-riviere-600 dark:text-riviere-300">
       Cochez les patrons que vous possédez vraiment. La liste sert ensuite de filtre dans
-      l'onglet <em>Choisir</em>. Tout reste sur cet appareil.
+      l'onglet <em>Choisir</em>, et la sauvegarde emporte aussi vos marques de type d'eau.
+      Tout reste sur cet appareil.
     </p>
     <div id="inventaire" class="mt-3 grid gap-1.5 sm:grid-cols-2"></div>
 
@@ -198,6 +214,10 @@
         <div>
           <dt class="font-medium">La table du ciel — absente</dt>
           <dd class="text-riviere-700 dark:text-riviere-300">La fiche annonce « touchez les conditions du jour », mais le PDF fourni est une impression : les boutons de conditions n'y ont pas survécu. Aucune table ciel → teinte n'a donc été reconstituée. Si vous avez la fiche plastifiée sous les yeux, dictez-moi ces correspondances et je les branche.</dd>
+        </div>
+        <div>
+          <dt class="font-medium">Le type d'eau — le vôtre, pas celui de la fiche</dt>
+          <dd class="text-riviere-700 dark:text-riviere-300">Rivière calme, rivière rapide, lac : la fiche n'en dit rien, et aucune table n'a été inventée pour la combler. Le registre part vide et se remplit de vos marques, sortie après sortie. Il range les patrons, il n'en écarte aucun — ce que vous n'avez pas marqué reste affiché en dessous.</dd>
         </div>
         <div>
           <dt class="font-medium">Les noms dans le coffre — non identifiés</dt>
