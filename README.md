@@ -3,13 +3,13 @@
 Petites applications web autonomes : elles tiennent dans un dossier, tournent
 dans le navigateur, fonctionnent hors ligne et n'envoient rien nulle part.
 
-**→ [Ouvrir la page d'accueil](https://pfrcharlespatrick-rgb.github.io/divers/)**
+**→ [Ouvrir la page d'accueil](https://pfrcharlespatrick-rgb.github.io/Divers/)**
 
 ---
 
 ## Choisir sa mouche à saumon
 
-**→ [Ouvrir l'application](https://pfrcharlespatrick-rgb.github.io/divers/mouches-saumon/)**
+**→ [Ouvrir l'application](https://pfrcharlespatrick-rgb.github.io/Divers/mouches-saumon/)**
 
 La fiche plastifiée de Patrick Blanchet, mise en application : trente et un
 patrons de mouches à saumon, leur toilette, leur profil coloré, le registre du
