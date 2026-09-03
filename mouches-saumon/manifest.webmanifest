@@ -1,7 +1,7 @@
 {
-  "name": "Choisir sa mouche à saumon",
-  "short_name": "Mouche à saumon",
-  "description": "La fiche de Patrick Blanchet en application : 31 patrons, leur toilette, leur profil coloré, et votre coffre. Hors ligne, sans compte.",
+  "name": "Ma mouche du jour",
+  "short_name": "Ma mouche",
+  "description": "Les conditions du jour, et la mouche à sortir de votre coffre — en photo, avec la manière de la pêcher. Hors ligne, sans compte.",
   "lang": "fr-CA",
   "dir": "ltr",
   "start_url": ".",

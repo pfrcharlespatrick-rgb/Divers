@@ -43,7 +43,7 @@ const T = {
 /* b(couleur, libellé) — une bande du profil coloré. */
 const b = (c, l) => ({ c, l });
 
-const MOUCHES = [
+const FICHE = [
   {
     nom: 'Black Bear (green butt)',
     origine: 'Classique nord-américaine',
@@ -299,7 +299,7 @@ const MOUCHES = [
  * `fenetre` est en revanche une lecture de l'application : la fiche parle de
  * « petite », « moyenne » et « grosse » mouche sans chiffrer les numéros.
  * L'échelle posée ici : petite = n° 10 à 16, moyenne = n° 6 à 8, grosse = n° 2 à 4. */
-const NIVEAUX = {
+const NIVEAUX_FICHE = {
   basse: {
     titre: 'Eau basse',
     fiche: "Petite mouche, montage dégarni, modèle « low water », ou streamer.",
@@ -320,91 +320,9 @@ const NIVEAUX = {
   }
 };
 
-const TEINTES = {
+const TEINTES_FICHE = {
   sombre: { libelle: 'Sombre', puce: '#17181c', desc: 'corps noir ou très foncé' },
   argentee: { libelle: 'Argentée', puce: '#c6cbd2', desc: 'corps de tinsel ou de floche claire' },
   vive: { libelle: 'Vive', puce: '#f2761b', desc: 'corps orange, rouge, jaune, vert ou bleu' },
   mixte: { libelle: 'Mixte', puce: '#7a6a3a', desc: 'corps en deux teintes contrastées' }
-};
-
-/* Ce que la photo du coffre montre, panneau par panneau.
- *
- * C'est une LECTURE VISUELLE, pas une identification. Une photo ne dit pas le
- * nom d'un patron : elle dit une famille, une teinte, une taille apparente.
- * Rien ici n'est donné pour un nom certain — c'est à vous de nommer.
- */
-const COFFRE = [
-  {
-    id: 'couvercle',
-    titre: 'Couvercle',
-    image: 'assets/img/coffre-couvercle.jpg',
-    familles: [
-      { n: 8, quoi: 'Grosses sèches en poil de cerf, corps fuselé, hackle palmé', teintes: ['#8a6b45', '#c9bfae', '#3ddc6a'], note: 'Profil de Bomber. Brun et gris naturels ; trois portent un ferret ou une tête vert vif.' },
-      { n: 5, quoi: 'Mouches à aile de poil sombre sur corps fauve', teintes: ['#c99a4e', '#2a2622'], note: 'Aile noire ou brun foncé, corps clair, hackle palmé.' },
-      { n: 1, quoi: 'Mouche à corps orange vif et queue rouge', teintes: ['#f2761b', '#cf2b2b'], note: "La teinte la plus proche des orangées de la fiche." },
-      { n: 1, quoi: 'Grosse mouche à aile de poil jaune vif', teintes: ['#f0c419', '#8a6b45'], note: 'Aile jaune franc au-dessus d\'un corps brun palmé.' },
-      { n: 2, quoi: 'Mouches à aile blanche et flanc moucheté', teintes: ['#e8e4dc', '#8a7a5c'], note: 'Profil de noyée ou de petit streamer.' },
-      { n: 1, quoi: 'Mouche à corps et collerette orange fluo', teintes: ['#ff6a13'], note: null },
-      { n: 3, quoi: 'Mouches à corps de mousse noire, point orange', teintes: ['#17181c', '#f2761b'], note: 'Fourmi ou coléoptère — terrestres, hors du registre de la fiche.' },
-      { n: 1, quoi: 'Mouche noire à hackle dense', teintes: ['#17181c'], note: null },
-      { n: 3, quoi: 'Sèches à corps jaune, hackle et longues cerques', teintes: ['#f0d060', '#8a6b45'], note: null },
-      { n: 3, quoi: 'Sèches rouges ou roses à hackle', teintes: ['#cf2b2b', '#e08a9a'], note: null },
-      { n: 2, quoi: 'Sèches brun clair et crème', teintes: ['#d9c9a8'], note: null }
-    ]
-  },
-  {
-    id: 'fond',
-    titre: 'Fond',
-    image: 'assets/img/coffre-fond.jpg',
-    familles: [
-      { n: 6, quoi: 'Grands streamers à marabout et fibres brillantes', teintes: ['#6b7a2a', '#17181c', '#3ddc6a'], note: 'Olive, noir et chartreuse. La fiche les range sous « eau basse » comme solution de rechange.' },
-      { n: 2, quoi: 'Bombers bruns à côtes jaune d\'or', teintes: ['#8a6b45', '#d9a520'], note: 'Poil de cerf brun, deux bandes jaunes marquées.' },
-      { n: 2, quoi: 'Grosses mouches à aile blanche et tête filée', teintes: ['#e8e4dc', '#c9bfae'], note: 'Profil de Muddler.' },
-      { n: 1, quoi: 'Mouche à hackle grizzly et fibres violettes', teintes: ['#8a8a8a', '#6b4a8a'], note: null },
-      { n: 3, quoi: 'Mouches à aile grise ou blanche mouchetée', teintes: ['#c9c4bc', '#8a7a5c'], note: null },
-      { n: 1, quoi: 'Petite mouche à corps orange', teintes: ['#f2761b'], note: null },
-      { n: 1, quoi: 'Mouche noire à tête rouge', teintes: ['#17181c', '#cf2b2b'], note: null },
-      { n: 1, quoi: 'Petite mouche chartreuse', teintes: ['#9acd32'], note: null },
-      { n: 6, quoi: 'Petites sèches à hackle : grises, brunes, une à longues cerques', teintes: ['#9aa0a6', '#7a5a3a'], note: null }
-    ]
-  }
-];
-
-/* Les rapprochements que la photo autorise — et rien de plus.
- * Aucun n'est coché d'avance : ce sont des pistes à confirmer sur l'étau. */
-const RAPPROCHEMENTS = [
-  { mouche: 'Black Bear (green butt)', pourquoi: 'Le coffre contient des montages noirs à touche vert fluo, la signature du green butt.' },
-  { mouche: 'Hot Orange', pourquoi: 'Une mouche à corps et collerette orange fluo est visible dans le couvercle.' },
-  { mouche: 'Orange Blossom', pourquoi: 'Même famille orangée ; la photo ne permet pas de trancher entre les deux.' },
-  { mouche: 'Godbout de cristal', pourquoi: 'Des montages à corps sombre brillant et plumet vert vif y ressemblent de loin.' }
-];
-
-const LECTURE_COFFRE = "L'essentiel de ce coffre est fait de Bombers, de streamers et de sèches — des montages que la fiche de Patrick Blanchet ne couvre pas, puisqu'elle traite des noyées classiques à aile de poil et de plume. Les recoupements possibles se comptent sur les doigts d'une main, et aucun n'est certain à partir d'une photo. D'où le principe de cet onglet : il vous montre ce qu'il voit, vous nommez.";
-
-/* ─────────────── Troisième registre : le type d'eau ───────────────
- *
- * La fiche n'en dit rien. Absolument rien : c'est une fiche de rivière à
- * saumon, elle traite du niveau de l'eau et de la teinte, jamais du courant ni
- * des lacs. Aucune table n'a donc été inventée pour la combler.
- *
- * Ce registre est le vôtre. Aucun patron n'arrive marqué ; vous marquez les
- * vôtres au fil des sorties, et un patron non marqué n'est jamais écarté — il
- * est seulement rangé sous ceux que vous avez marqués.
- */
-const TYPES_EAU = {
-  calme: {
-    libelle: 'Rivière calme',
-    court: 'calme',
-    note: "Fosse lente, courant faible. Le saumon voit la mouche longtemps et de près."
-  },
-  rapide: {
-    libelle: 'Rivière rapide',
-    court: 'rapide',
-    note: "Courant vif, eau brisée. La mouche passe vite et se voit mal."
-  },
-  lac: {
-    libelle: 'Lac',
-    court: 'lac',
-    note: "Hors du champ de la fiche, qui ne traite que des rivières à saumon."
-  }
 };

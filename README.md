@@ -7,93 +7,83 @@ dans le navigateur, fonctionnent hors ligne et n'envoient rien nulle part.
 
 ---
 
-## Choisir sa mouche à saumon
+## Ma mouche du jour
 
 **→ [Ouvrir l'application](https://pfrcharlespatrick-rgb.github.io/Divers/mouches-saumon/)**
 
-La fiche plastifiée de Patrick Blanchet, mise en application : trente et un
-patrons de mouches à saumon, leur toilette, leur profil coloré, le registre du
-niveau d'eau — et l'inventaire de votre propre coffre.
+Vous donnez les conditions du jour. L'application sort de **votre** coffre la
+mouche qui convient — en photographie, avec la manière de la pêcher et l'endroit
+exact où la trouver dans la boîte.
 
 ### Les quatre onglets
 
 | Onglet | À quoi ça sert |
 |---|---|
-| **Choisir** | Trois registres : le niveau de l'eau donne une fenêtre de tailles, la teinte réduit la liste, le type d'eau fait remonter ce que vous pêchez là. Le résultat dit, pour chaque patron retenu, en quel numéro le monter aujourd'hui. |
-| **Catalogue** | Les trente et un patrons, avec recherche par nom, par matériau ou par rivière. |
-| **Mon coffre** | La photo de votre coffre, panneau par panneau, avec un relevé des familles de montage. Puis l'inventaire à cocher, qui sert ensuite de filtre. |
-| **La fiche** | D'où viennent les données, ce que l'application déduit, et ce qu'elle refuse d'inventer. |
+| **Le jour** | Quatre questions — où, le ciel, l'eau, ça monte ou non — et la mouche du jour, en photo. Plus deux solutions de rechange, la manière de la pêcher, et les conseils que ces conditions appellent. |
+| **Mon coffre** | Les 52 mouches, découpées une à une dans votre photographie. Décochez celles que vous n'avez plus : elles sortent des conseils. |
+| **La fiche** | Les 31 patrons du PDF de Patrick Blanchet, avec leur toilette et leur profil coloré. Votre document d'origine, conservé entier. |
+| **D'où ça vient** | Ce qui est repris, ce qui est observé, ce qui est déduit. |
 
-### Le profil coloré
+### La mouche du jour
 
-Chaque fiche porte une bande de couleurs : une case par matériau nommé dans la
-toilette, dans l'ordre du montage — ferret, plumet, queue, corps, collerette,
-aile, tête. Touchez une case, elle vous dit quel matériau elle représente.
+Le résultat n'est pas une liste, c'est **une** mouche, en grand :
 
-C'est un schéma, pas une photographie. Le lien **Voir des photographies** de
-chaque fiche ouvre une recherche d'images pour voir la mouche réelle.
+- **la photographie** de la vôtre, découpée dans l'image du coffre ;
+- **pourquoi elle** — quels caractères la font gagner dans ces conditions ;
+- **comment la pêcher** — la manière propre à sa famille de montage ;
+- **où la trouver** — un cercle rouge posé sur la photo du panneau.
 
-## Ce qui vient de la fiche, ce qui vient de l'application
+Suivent deux solutions de rechange, puis les conseils du jour : dérive,
+approche, profondeur, lecture de l'eau.
 
-Le PDF de Patrick Blanchet est la source unique. Rien n'a été complété depuis
-ailleurs, et là où la fiche se tait, l'application se tait aussi.
+Et, quand les conditions réclament quelque chose que le coffre n'a pas, l'onglet
+le dit et propose comment y suppléer — allonger le bas de ligne, ralentir la
+dérive, dégarnir un hackle. Vous n'avez que ces mouches-là ; l'application ne
+fait jamais semblant du contraire.
 
-**Repris tels quels :** les noms, les origines, les toilettes, les numéros
-d'hameçon, les réserves de l'auteur, le registre du niveau d'eau et les sources
-citées.
+## Trois origines, à ne pas confondre
 
-**Déduit du texte de la fiche, et signalé comme tel :**
+**1. Votre fiche — reprise mot pour mot.** Noms, origines, toilettes, numéros
+d'hameçon, réserves de l'auteur, sources citées. Rien n'y a été ajouté.
 
-- *Le profil coloré* — une relecture de la toilette écrite. Pas de toilette, pas
-  de profil : neuf patrons régionaux restent sans bande.
-- *La teinte* (sombre, argentée, vive, mixte) — tirée de la couleur du corps
-  telle que la toilette la décrit. Même règle : pas de toilette, pas de teinte.
-- *La fenêtre de tailles* — la fiche dit « petite », « moyenne », « grosse »
-  sans chiffrer. L'application pose une échelle : petite = n° 10 à 16,
-  moyenne = n° 6 à 8, grosse = n° 2 à 4.
+Ce que le PDF **ne contient pas** : la table qui relie les conditions du jour aux
+patrons. La fiche l'annonce en tête (« touchez les conditions du jour »), mais le
+fichier est l'*impression* d'une page interactive : les boutons de conditions ne
+se sont pas imprimés, et le tableau n'apparaît sur aucune des sept pages —
+vérifié page par page, en image et non seulement en texte.
 
-**Volontairement absent :** la table qui associe le ciel à la teinte. La fiche
-l'annonce (« touchez les conditions du jour »), mais le PDF fourni est une
-impression : les boutons de conditions n'y ont pas survécu, et le tableau n'y
-figure nulle part. Il n'a donc pas été reconstitué de mémoire. Le seul cas que
-la fiche tranche noir sur blanc — eau haute et sale, teinte sombre — est câblé
-dans l'application.
+**2. Votre coffre — ce que la photo montre.** Les 52 mouches ont été découpées
+dans votre photographie. Chacune est décrite par ce qui se voit : famille de
+montage, teinte dominante, taille apparente, volume de la silhouette, et la nage
+que cette silhouette permet. **Aucun nom de patron n'est avancé** — une photo n'en
+donne pas, et un nom inventé ferait sortir la mauvaise mouche.
 
-**Le vôtre, pas celui de la fiche :** le type d'eau — rivière calme, rivière
-rapide, lac. La fiche n'en dit rien : elle ne traite que des rivières à saumon,
-et jamais du courant ni des lacs. Aucune table n'a donc été inventée pour la
-combler. Le registre part vide et se remplit de vos marques : sur chaque fiche,
-trois étiquettes disent où vous pêchez ce patron. Il range les résultats, il
-n'en écarte aucun — ce que vous n'avez pas marqué reste affiché en dessous.
-
-**Non identifié :** les mouches de la photo. Une photo donne une famille de
-montage, des teintes, une taille apparente. Elle ne donne pas un nom. L'onglet
-*Mon coffre* décrit ce qu'il voit et vous laisse nommer ; les quatre
-rapprochements proposés sont des pistes, aucune n'est cochée d'avance.
+**3. Les conseils — principes généraux.** Le classement et les conseils viennent
+des principes généraux de la pêche à la mouche, pas de la fiche : la silhouette
+prime quand la lumière baisse, on descend en taille quand l'eau est basse et
+claire, on descend en profondeur quand rien ne monte, la silhouette compte plus
+que la couleur en eau teintée. Des principes, pas des certitudes.
 
 ## Vos données
 
 Tout est écrit dans la mémoire du navigateur (`localStorage`), sur votre
 appareil. Pas de compte, pas de serveur, pas de traceur, aucune requête vers
-l'extérieur. Vider les données du navigateur efface l'inventaire — d'où le
-bouton **Sauvegarder mon coffre (.json)**, qui emporte aussi vos marques de
-type d'eau.
+l'extérieur. Le bouton **Sauvegarder mes réglages** produit un `.json` à
+conserver.
 
 Sur téléphone, « Ajouter à l'écran d'accueil » installe l'application. Une fois
-ouverte, elle fonctionne sans réseau.
+ouverte, elle fonctionne sans réseau — les 52 photographies comprises.
 
 ## Sous le capot
 
 HTML, Tailwind CSS et JavaScript, sans cadre applicatif ni étape de compilation
-à l'usage. La feuille de style **et les deux polices** sont construites et
-livrées dans le dépôt : aucun CDN n'est appelé, aucune requête ne part vers
-l'extérieur, et l'application démarre hors ligne dès qu'elle est en cache.
+à l'usage. La feuille de style, les deux polices et toutes les images sont
+livrées dans le dépôt : aucun CDN, aucune requête sortante.
 
 Les couleurs viennent du sujet : le vert-noir d'une rivière au crépuscule, le
 blanc froid de la mousse alvéolée du coffre, et le rouge de la tête laquée qui
-signe la série des Rat et la Cosseboom — le seul accent de l'interface, réservé
-à ce que vous choisissez et à ce que l'application répond. Titres en Zilla Slab,
-texte en Public Sans.
+signe la série des Rat — le seul accent, réservé à ce que vous choisissez et à ce
+que l'application répond. Titres en Zilla Slab, texte en Public Sans.
 
 ```
 divers/
@@ -107,16 +97,19 @@ divers/
     └── assets/
         ├── css/app.css           Tailwind compilé
         ├── polices/              Zilla Slab et Public Sans, en woff2
-        ├── js/donnees.js         les trente et un patrons
-        ├── js/app.js             la logique
-        ├── img/                  la photo du coffre et ses deux panneaux
+        ├── js/coffre.js          les 52 mouches et leurs caractères observés
+        ├── js/conditions.js      les registres et le moteur de conseil
+        ├── js/fiche.js           les 31 patrons du PDF
+        ├── js/app.js             l'interface
+        ├── img/mouches/          les 52 gros plans
+        ├── img/coffre-*.jpg      les deux panneaux
         └── icones/
 ```
 
 ### Refaire la feuille de style
 
-Nécessaire seulement si vous modifiez les classes CSS dans `index.html` ou
-`app.js` :
+Nécessaire seulement si vous modifiez les classes CSS dans `index.html` ou dans
+les fichiers `js` :
 
 ```sh
 cd outils

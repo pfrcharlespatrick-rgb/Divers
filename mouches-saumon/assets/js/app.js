@@ -1,114 +1,216 @@
-/* Choisir sa mouche à saumon — logique de l'application.
- * Aucune donnée n'est produite ici : tout vient de donnees.js, qui vient de la fiche. */
+/* Ma mouche du jour — interface.
+ *
+ * Les données viennent de coffre.js (ce que la photo montre), conditions.js
+ * (les principes généraux) et fiche.js (le PDF de Patrick Blanchet). Rien
+ * n'est produit ici que de l'affichage.
+ */
 
 'use strict';
 
-const CLE = 'coffre-mouches-saumon.v1';
+const CLE = 'ma-mouche-du-jour.v1';
 
 const etat = {
-  vue: 'choisir',
-  niveau: 'normale',
-  clarte: 'claire',
-  teintes: new Set(),
-  filtreCoffre: false,
-  recherche: '',
-  coffre: new Set(),
-  typeEau: null,          // null = tous les types
-  marques: new Map()      // nom de mouche → Set de types d'eau, marqués par vous
+  vue: 'jour',
+  lieu: 'rapide',
+  ciel: 'voile',
+  eau: 'normale',
+  activite: 'rien',
+  absentes: new Set(),   // les mouches que vous avez décochées
+  filtre: null,          // famille mise en avant dans l'onglet coffre
+  recherche: ''
 };
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
-const echappe = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const echappe = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+const img = (id) => `assets/img/mouches/${id}.jpg`;
 
 /* ─────────────── Mémoire de l'appareil ─────────────── */
 
 function charge() {
   try {
-    const brut = localStorage.getItem(CLE);
-    if (!brut) return;
-    const d = JSON.parse(brut);
-    etat.coffre = new Set(d.coffre || []);
-    for (const [nom, types] of Object.entries(d.marques || {})) {
-      etat.marques.set(nom, new Set(types));
-    }
+    const d = JSON.parse(localStorage.getItem(CLE) || 'null');
+    if (!d) return;
+    for (const k of ['lieu', 'ciel', 'eau', 'activite']) if (d[k]) etat[k] = d[k];
+    etat.absentes = new Set(d.absentes || []);
   } catch (e) { /* mémoire indisponible : on continue sans */ }
 }
 
 function enregistre() {
   try {
-    localStorage.setItem(CLE, JSON.stringify({ version: 2, coffre: [...etat.coffre], marques: marquesEnObjet() }));
+    localStorage.setItem(CLE, JSON.stringify({
+      version: 1, lieu: etat.lieu, ciel: etat.ciel, eau: etat.eau,
+      activite: etat.activite, absentes: [...etat.absentes]
+    }));
   } catch (e) { /* navigation privée, quota : on continue sans */ }
 }
 
-/* Les marques du troisième registre, sous une forme que JSON accepte. */
-function marquesEnObjet() {
-  const o = {};
-  for (const [nom, types] of etat.marques) if (types.size) o[nom] = [...types];
-  return o;
+const presentes = () => MOUCHES.filter((m) => !etat.absentes.has(m.id));
+
+/* ─────────────── Les boutons de conditions ─────────────── */
+
+function boutons(cible, table, actif, attribut) {
+  $(cible).innerHTML = Object.entries(table).map(([cle, v]) =>
+    `<button type="button" class="choix rounded-lg border-2 border-riviere-200 bg-white px-3 py-2.5 text-sm font-medium transition dark:border-riviere-700 dark:bg-riviere-900"
+       data-${attribut}="${cle}" aria-pressed="${actif === cle}">${echappe(v.libelle)}</button>`
+  ).join('');
 }
 
-function estMarquee(mouche, type) {
-  const types = etat.marques.get(mouche.nom);
-  return Boolean(types && types.has(type));
+function rendChoix() {
+  boutons('#choix-lieu', LIEUX, etat.lieu, 'lieu');
+  boutons('#choix-ciel', CIELS, etat.ciel, 'ciel');
+  boutons('#choix-eau', EAUX, etat.eau, 'eau');
+  boutons('#choix-activite', ACTIVITES, etat.activite, 'activite');
+  $('#texte-lieu').textContent = LIEUX[etat.lieu].desc;
 }
 
-/* ─────────────── Tailles ─────────────── */
+/* ─────────────── La mouche du jour ─────────────── */
 
-/* Un numéro d'hameçon décroît quand la mouche grossit : le n° 2 est gros,
-   le n° 16 est petit. Les intervalles sont donc écrits [gros, petit]. */
-function tailleCompatible(mouche, fenetre) {
-  if (!mouche.hamecon) return null;                 // la fiche ne dit rien
-  const [gros, petit] = mouche.hamecon;
-  const [fGros, fPetit] = fenetre;
-  return petit >= fGros && gros <= fPetit;
+const ARTICLE = { bomber: 'un', streamer: 'un', seche: 'une', noyee: 'une', terrestre: 'un' };
+
+function pourquoi(mouche, pour) {
+  const raisons = {
+    famille: () => `c'est ${ARTICLE[mouche.famille]} ${FAMILLES[mouche.famille].libelle.toLowerCase()}, ce que ces conditions réclament`,
+    teinte: () => `sa teinte ${TEINTES[mouche.teinte].libelle} convient à cette lumière`,
+    taille: () => `sa taille ${mouche.taille === 'grosse' ? 'imposante' : mouche.taille} correspond à cette eau`,
+    volume: () => mouche.volume === 'etoffe' ? 'sa silhouette étoffée se voit de loin' : 'sa silhouette dégarnie passe inaperçue',
+    nage: () => mouche.nage === 'surface' ? 'elle travaille en surface' : mouche.nage === 'fond' ? 'elle descend chercher le poisson' : 'elle nage entre deux eaux'
+  };
+  return pour.map((t) => raisons[t] && raisons[t]()).filter(Boolean);
 }
 
-function taillesRetenues(mouche, fenetre) {
-  if (!mouche.hamecon) return null;
-  const gros = Math.max(mouche.hamecon[0], fenetre[0]);
-  const petit = Math.min(mouche.hamecon[1], fenetre[1]);
-  return gros <= petit ? [gros, petit] : null;
+function pastilles(mouche) {
+  return [
+    `<span class="inline-flex items-center gap-1.5 rounded-full bg-riviere-100 px-2.5 py-1 text-xs dark:bg-riviere-800">
+       <span class="h-2.5 w-2.5 rounded-full ring-1 ring-black/20 dark:ring-white/25" style="background:${TEINTES[mouche.teinte].puce}"></span>
+       ${echappe(TEINTES[mouche.teinte].libelle)}</span>`,
+    `<span class="rounded-full bg-riviere-100 px-2.5 py-1 text-xs dark:bg-riviere-800">${echappe(FAMILLES[mouche.famille].libelle)}</span>`,
+    `<span class="rounded-full bg-riviere-100 px-2.5 py-1 text-xs dark:bg-riviere-800">${echappe(mouche.taille)}</span>`
+  ].join('');
 }
 
-/* ─────────────── Sélection ─────────────── */
+function carteReperage(mouche) {
+  const p = PANNEAUX[mouche.pan];
+  return `<figure class="reperage mt-4 overflow-hidden rounded-lg ring-1 ring-riviere-200 dark:ring-riviere-700">
+      <img src="${p.image}" alt="Panneau « ${echappe(p.titre)} » du coffre" loading="lazy" class="block w-full">
+      <span class="pastille" style="left:${mouche.cx / 10}%; top:${mouche.cy / 10}%"></span>
+      <figcaption class="bg-riviere-50 px-3 py-2 text-xs text-riviere-600 dark:bg-riviere-900 dark:text-riviere-300">
+        Où la trouver&nbsp;: panneau « ${echappe(p.titre)} », dans le cercle.
+      </figcaption>
+    </figure>`;
+}
 
-function selection() {
-  const niveau = NIVEAUX[etat.niveau];
-  const eauSale = etat.niveau === 'haute' && etat.clarte === 'sale';
-  const teintesVoulues = eauSale ? new Set(['sombre']) : etat.teintes;
+function carteVedette(entree, total) {
+  const { m, pour } = entree;
+  const raisons = pourquoi(m, pour);
+  return `<article class="overflow-hidden rounded-2xl border-2 border-laque-500 bg-white dark:bg-riviere-900">
+    <div class="flex items-center justify-between gap-3 bg-laque-500 px-4 py-2">
+      <p class="font-titre text-base text-white">La mouche du jour</p>
+      <p class="text-xs text-laque-100">choisie parmi vos ${total}</p>
+    </div>
+    <img src="${img(m.id)}" alt="${echappe(m.nom)}" class="block w-full bg-riviere-100 dark:bg-riviere-800">
+    <div class="p-4">
+      <h3 class="font-titre text-xl leading-tight">${echappe(m.nom)}</h3>
+      <div class="mt-2 flex flex-wrap gap-1.5">${pastilles(m)}</div>
 
-  const retenues = [];
-  const ecartees = [];
+      ${raisons.length ? `<p class="mt-3 text-sm leading-relaxed">
+        <strong class="font-medium">Pourquoi elle&nbsp;:</strong> ${echappe(raisons.join(', '))}.</p>` : ''}
 
-  for (const m of MOUCHES) {
-    if (etat.filtreCoffre && !etat.coffre.has(m.nom)) continue;
+      <p class="mt-3 rounded-lg bg-riviere-50 p-3 text-sm leading-relaxed dark:bg-riviere-800/60">
+        <strong class="font-medium">Comment la pêcher.</strong> ${echappe(CONSEILS_FAMILLE[m.famille])}
+      </p>
 
-    const raisons = [];
+      ${carteReperage(m)}
+    </div>
+  </article>`;
+}
 
-    // Registre de l'eau
-    const compat = tailleCompatible(m, niveau.fenetre);
-    const nommeeEauBasse = etat.niveau === 'basse' && m.eauBasse;
-    if (compat === false && !nommeeEauBasse) continue;
-    if (compat === null && !nommeeEauBasse) raisons.push("la fiche ne donne pas de numéro d'hameçon");
+function carteRechange(entree, rang) {
+  const { m } = entree;
+  return `<article class="overflow-hidden rounded-xl border border-riviere-200 bg-white dark:border-riviere-800 dark:bg-riviere-900">
+    <img src="${img(m.id)}" alt="${echappe(m.nom)}" loading="lazy" class="block w-full bg-riviere-100 dark:bg-riviere-800">
+    <div class="p-3">
+      <p class="text-xs font-medium uppercase tracking-wide text-riviere-500 dark:text-riviere-400">${rang}<sup>e</sup> choix</p>
+      <h4 class="mt-0.5 font-titre text-base leading-tight">${echappe(m.nom)}</h4>
+      <div class="mt-1.5 flex flex-wrap gap-1">${pastilles(m)}</div>
+    </div>
+  </article>`;
+}
 
-    // Registre de la teinte
-    if (teintesVoulues.size) {
-      if (!m.teinte) raisons.push('la fiche ne donne pas de toilette, donc pas de teinte');
-      else if (!teintesVoulues.has(m.teinte)) continue;
-    }
+function rendResultat() {
+  const dispo = presentes();
+  const zone = $('#resultat');
 
-    // Registre du type d'eau : il ne retire personne, il fait remonter les
-    // patrons que vous avez marqués. Un patron non marqué reste disponible.
-    const marquee = etat.typeEau ? estMarquee(m, etat.typeEau) : false;
-
-    (raisons.length ? ecartees : retenues).push({ m, raisons, nommeeEauBasse, marquee });
+  if (!dispo.length) {
+    zone.innerHTML = `<p class="rounded-xl border border-dashed border-riviere-300 p-6 text-center text-sm text-riviere-500 dark:border-riviere-700 dark:text-riviere-400">
+      Vous avez décoché toutes vos mouches. Rendez-en au moins une dans l'onglet <em>Mon coffre</em>.</p>`;
+    return;
   }
 
-  return { retenues, ecartees, eauSale, niveau };
+  const { classees, manques, conseils } = conseilDuJour(etat, dispo);
+  const [premiere, ...suite] = classees;
+  const rechange = suite.slice(0, 2);
+
+  zone.innerHTML = `
+    ${carteVedette(premiere, dispo.length)}
+
+    ${rechange.length ? `<h3 class="mt-6 font-titre text-lg">Si elle ne donne rien</h3>
+      <div class="mt-2 grid grid-cols-2 gap-3">
+        ${rechange.map((e, i) => carteRechange(e, i + 2)).join('')}
+      </div>` : ''}
+
+    ${manques.length ? `<div class="mt-6 rounded-xl border border-laque-300 bg-laque-100 p-4 dark:border-laque-700 dark:bg-laque-700/20">
+      <h3 class="font-titre text-base">Ce qui vous manquerait aujourd'hui</h3>
+      ${manques.map((x) => `<p class="mt-2 text-sm leading-relaxed">${echappe(x.texte)}</p>`).join('')}
+    </div>` : ''}
+
+    ${conseils.length ? `<h3 class="mt-6 font-titre text-lg">Les conseils du jour</h3>
+      <ul class="mt-2 space-y-2">
+        ${conseils.map((c) => `<li class="flex gap-2.5 rounded-lg border border-riviere-200 bg-white p-3 text-sm leading-relaxed dark:border-riviere-800 dark:bg-riviere-900">
+            <span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-laque-500"></span>
+            <span>${echappe(c)}</span></li>`).join('')}
+      </ul>` : ''}
+
+    <p class="sans-impression mt-5 text-xs leading-relaxed text-riviere-500 dark:text-riviere-400">
+      Ce classement ne vient pas de la fiche de Patrick Blanchet — elle ne contient pas de table des
+      conditions. Il applique les principes généraux de la pêche à la mouche à ce que votre photographie
+      montre. L'onglet <em>D'où ça vient</em> l'explique en entier.
+    </p>`;
 }
 
-/* ─────────────── Rendu d'une fiche ─────────────── */
+/* ─────────────── Onglet « Mon coffre » ─────────────── */
+
+function rendCoffre() {
+  $('#compte-coffre').textContent = `${presentes().length} sur ${MOUCHES.length}`;
+
+  const puce = (cle, libelle, n, actif) =>
+    `<button type="button" class="etiquette rounded-full border border-riviere-200 px-3 py-1.5 text-sm transition dark:border-riviere-700"
+       data-filtre="${cle}" aria-pressed="${actif}">${echappe(libelle)} <span class="tabular-nums text-riviere-500">${n}</span></button>`;
+
+  $('#filtres-coffre').innerHTML =
+    puce('tous', 'Toutes', MOUCHES.length, etat.filtre === null) +
+    Object.entries(FAMILLES).map(([cle, f]) =>
+      puce(cle, f.libelle, MOUCHES.filter((m) => m.famille === cle).length, etat.filtre === cle)).join('');
+
+  const liste = etat.filtre ? MOUCHES.filter((m) => m.famille === etat.filtre) : MOUCHES;
+
+  $('#grille-coffre').innerHTML = liste.map((m) => {
+    const absente = etat.absentes.has(m.id);
+    return `<article class="overflow-hidden rounded-xl border border-riviere-200 bg-white transition dark:border-riviere-800 dark:bg-riviere-900${absente ? ' opacity-45' : ''}">
+      <img src="${img(m.id)}" alt="${echappe(m.nom)}" loading="lazy" class="block w-full bg-riviere-100 dark:bg-riviere-800">
+      <div class="p-3">
+        <h4 class="font-titre text-sm leading-tight">${echappe(m.nom)}</h4>
+        <p class="mt-1 text-xs text-riviere-500 dark:text-riviere-400">${echappe(FAMILLES[m.famille].libelle)} · ${echappe(TEINTES[m.teinte].libelle)} · ${echappe(m.taille)}</p>
+        <label class="sans-impression mt-2 flex cursor-pointer items-center gap-2 text-xs">
+          <input type="checkbox" class="h-4 w-4 accent-laque-500" data-presente="${m.id}"${absente ? '' : ' checked'}>
+          <span>${absente ? "je ne l'ai plus" : "je l'ai"}</span>
+        </label>
+      </div>
+    </article>`;
+  }).join('');
+}
+
+/* ─────────────── Onglet « La fiche » ─────────────── */
 
 function badgeReserve(m) {
   if (m.reserve === 'non-verifiee') return '<span class="rounded bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-900 dark:bg-amber-900/40 dark:text-amber-200">toilette non vérifiée</span>';
@@ -129,204 +231,33 @@ function profilHtml(m) {
     <p class="mt-1 min-h-[1.1rem] text-xs italic text-riviere-500 dark:text-riviere-400" data-role="legende">Touchez une bande pour lire le matériau.</p></div>`;
 }
 
-function lienPhotos(m) {
-  const q = encodeURIComponent(`mouche à saumon "${m.nom}" fly`);
-  return `<a href="https://duckduckgo.com/?iax=images&ia=images&q=${q}" target="_blank" rel="noopener noreferrer"
-    class="sans-impression inline-flex items-center gap-1 text-sm font-medium text-laque-600 hover:underline dark:text-laque-300">Voir des photographies <span aria-hidden="true">↗</span></a>`;
-}
-
-function ficheHtml(m, extra = {}) {
-  const coche = etat.coffre.has(m.nom);
-  const tailles = extra.fenetre ? taillesRetenues(m, extra.fenetre) : null;
-
-  return `<article class="fiche-mouche rounded-xl border border-riviere-200 bg-white p-4 dark:border-riviere-800 dark:bg-riviere-900">
-    <div class="flex flex-wrap items-start justify-between gap-2">
-      <div class="min-w-0">
-        <h3 class="font-titre text-lg leading-tight">${echappe(m.nom)}</h3>
-        ${m.origine ? `<p class="text-sm text-riviere-600 dark:text-riviere-300">${echappe(m.origine)}</p>` : ''}
-      </div>
-      <div class="flex shrink-0 flex-wrap items-center gap-1.5">${badgeReserve(m)}</div>
-    </div>
-
-    ${profilHtml(m)}
-
-    ${m.toilette ? `<p class="mt-3 text-sm leading-relaxed text-riviere-800 dark:text-papier-200">${echappe(m.toilette)}</p>` : ''}
-    ${m.note ? `<p class="mt-2 text-sm italic leading-relaxed text-riviere-600 dark:text-riviere-300">${echappe(m.note)}</p>` : ''}
-    ${!m.toilette && !m.note ? `<p class="mt-3 text-sm italic text-riviere-600 dark:text-riviere-300">Patron régional dont la fiche n'a pu vérifier la toilette dans une source fiable. Fiez-vous aux photographies.</p>` : ''}
-
-    <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
-      ${m.hamecon ? `<span class="text-riviere-700 dark:text-riviere-300">Hameçon n° ${m.hamecon[0]} à ${m.hamecon[1]}</span>` : ''}
-      ${tailles ? `<span class="rounded bg-laque-100 px-2 py-0.5 text-xs font-medium text-laque-700 dark:bg-laque-700/25 dark:text-laque-300">ici : n° ${tailles[0]} à ${tailles[1]}</span>` : ''}
-      ${extra.nommeeEauBasse ? `<span class="rounded bg-laque-100 px-2 py-0.5 text-xs font-medium text-laque-700 dark:bg-laque-700/25 dark:text-laque-300">nommée par la fiche pour l'eau basse</span>` : ''}
-      ${lienPhotos(m)}
-    </div>
-
-    ${extra.raisons && extra.raisons.length ? `<p class="mt-2 text-xs text-amber-700 dark:text-amber-300">Retenue sous réserve : ${extra.raisons.map(echappe).join(' ; ')}.</p>` : ''}
-
-    <div class="sans-impression mt-3 space-y-2 border-t border-riviere-100 pt-3 dark:border-riviere-800">
-      <label class="flex cursor-pointer items-center gap-2 text-sm">
-        <input type="checkbox" class="h-4 w-4 accent-laque-500" data-coffre="${echappe(m.nom)}" ${coche ? 'checked' : ''}>
-        <span>Je l'ai dans mon coffre</span>
-      </label>
-      <div class="flex flex-wrap items-center gap-1.5">
-        <span class="text-xs text-riviere-500 dark:text-riviere-400">Je la pêche en&nbsp;:</span>
-        ${Object.entries(TYPES_EAU).map(([cle, t]) => `<button type="button"
-            class="etiquette rounded-full border border-riviere-200 px-2.5 py-1 text-xs transition dark:border-riviere-700"
-            data-marque="${cle}" data-mouche="${echappe(m.nom)}"
-            aria-pressed="${estMarquee(m, cle)}">${echappe(t.libelle.toLowerCase())}</button>`).join('')}
-      </div>
-    </div>
-  </article>`;
-}
-
-/* ─────────────── Onglet « Choisir » ─────────────── */
-
-function rendChoix() {
-  $('#choix-niveau').innerHTML = Object.entries(NIVEAUX).map(([cle, n]) =>
-    `<button type="button" class="choix rounded-lg border-2 border-riviere-200 bg-white px-2 py-3 text-sm font-medium transition dark:border-riviere-700 dark:bg-riviere-900"
-       data-niveau="${cle}" aria-pressed="${etat.niveau === cle}">${echappe(n.titre.replace('Eau ', ''))}</button>`
-  ).join('');
-
-  $('#choix-clarte').innerHTML = [['claire', 'Claire'], ['sale', 'Sale']].map(([cle, lib]) =>
-    `<button type="button" class="choix rounded-lg border-2 border-riviere-200 bg-white px-2 py-2.5 text-sm font-medium transition dark:border-riviere-700 dark:bg-riviere-900"
-       data-clarte="${cle}" aria-pressed="${etat.clarte === cle}">${lib}</button>`
-  ).join('');
-
-  const boutonsTeinte = Object.entries(TEINTES).map(([cle, t]) =>
-    `<button type="button" class="choix flex items-center gap-2 rounded-lg border-2 border-riviere-200 bg-white px-3 py-2.5 text-sm font-medium transition dark:border-riviere-700 dark:bg-riviere-900"
-       data-teinte="${cle}" aria-pressed="${etat.teintes.has(cle)}" title="${echappe(t.desc)}">
-       <span class="h-3.5 w-3.5 shrink-0 rounded-full ring-1 ring-black/20 dark:ring-white/25" style="background:${t.puce}"></span>${echappe(t.libelle)}</button>`
-  ).join('');
-  $('#choix-type').innerHTML = Object.entries(TYPES_EAU).map(([cle, t]) =>
-    `<button type="button" class="choix rounded-lg border-2 border-riviere-200 bg-white px-3 py-2.5 text-sm font-medium transition dark:border-riviere-700 dark:bg-riviere-900"
-       data-type="${cle}" aria-pressed="${etat.typeEau === cle}">${echappe(t.libelle)}</button>`
-  ).join('') +
-    `<button type="button" class="choix rounded-lg border-2 border-riviere-200 bg-white px-3 py-2.5 text-sm font-medium transition dark:border-riviere-700 dark:bg-riviere-900"
-       data-type="tous" aria-pressed="${etat.typeEau === null}">Tous</button>`;
-
-  $('#choix-teinte').innerHTML = boutonsTeinte +
-    `<button type="button" class="choix rounded-lg border-2 border-riviere-200 bg-white px-3 py-2.5 text-sm font-medium transition dark:border-riviere-700 dark:bg-riviere-900"
-       data-teinte="toutes" aria-pressed="${etat.teintes.size === 0}">Toutes</button>`;
-}
-
-function rendResultats() {
-  const { retenues, ecartees, eauSale, niveau } = selection();
-
-  $('#texte-niveau').innerHTML =
-    `<strong class="font-medium">${echappe(niveau.titre)}.</strong> ${echappe(niveau.fiche)}
-     <span class="mt-1 block text-xs text-riviere-500 dark:text-riviere-400">Lecture de l'application : n° ${niveau.fenetre[0]} à ${niveau.fenetre[1]} (${echappe(niveau.fenetreTexte)}).</span>`;
-
-  const blocClarte = $('#bloc-clarte');
-  blocClarte.hidden = etat.niveau !== 'haute';
-  $('#texte-clarte').textContent = eauSale
-    ? "La fiche tranche ce cas : eau haute et sale, teinte sombre. La sélection est forcée sur les patrons sombres."
-    : '';
-
-  $('#compte-coffre').textContent = etat.coffre.size ? `(${etat.coffre.size})` : '(vide)';
-  const marquees = etat.typeEau ? retenues.filter((r) => r.marquee).length : 0;
-  $('#compte-resultats').textContent = etat.typeEau
-    ? `${marquees} marqué${marquees > 1 ? 's' : ''} sur ${retenues.length} retenu${retenues.length > 1 ? 's' : ''}`
-    : `${retenues.length} retenu${retenues.length > 1 ? 's' : ''}`;
-
-  $('#texte-type').textContent = etat.typeEau ? TYPES_EAU[etat.typeEau].note : '';
-
-  const fenetre = niveau.fenetre;
-  const carte = ({ m, nommeeEauBasse }) => ficheHtml(m, { fenetre, nommeeEauBasse });
-
-  let html;
-  if (!retenues.length) {
-    html = `<p class="rounded-lg border border-dashed border-riviere-300 p-6 text-center text-sm text-riviere-500 dark:border-riviere-700 dark:text-riviere-400">Aucun patron ne répond à ces conditions. Élargissez la teinte, ou décochez le filtre du coffre.</p>`;
-  } else if (etat.typeEau) {
-    // Le type d'eau range en deux tas, il n'en jette aucun.
-    const t = TYPES_EAU[etat.typeEau];
-    const miennes = retenues.filter((r) => r.marquee);
-    const autres = retenues.filter((r) => !r.marquee);
-    const titre = (txt, n) => `<h3 class="mt-1 flex items-baseline justify-between gap-3 font-titre text-base">
-        <span>${txt}</span><span class="font-texte text-sm font-normal tabular-nums text-riviere-500 dark:text-riviere-400">${n}</span></h3>`;
-
-    html = miennes.length
-      ? titre(`Ce que vous pêchez en ${echappe(t.libelle.toLowerCase())}`, miennes.length) +
-        `<div class="mt-2 space-y-3">${miennes.map(carte).join('')}</div>`
-      : `<p class="rounded-lg border border-dashed border-laque-300 p-4 text-sm text-riviere-700 dark:border-laque-700 dark:text-riviere-300">
-           Vous n'avez encore marqué aucun patron pour « ${echappe(t.libelle.toLowerCase())} ».
-           Sur chaque fiche ci-dessous, l'étiquette <em>${echappe(t.libelle.toLowerCase())}</em> le fait entrer ici.</p>`;
-
-    if (autres.length) {
-      html += titre('Les autres, non marqués', autres.length) +
-        `<div class="mt-2 space-y-3">${autres.map(carte).join('')}</div>`;
-    }
-  } else {
-    html = retenues.map(carte).join('');
-  }
-
-  if (ecartees.length) {
-    html += `<details class="sans-impression rounded-xl border border-dashed border-riviere-300 p-4 dark:border-riviere-700">
-      <summary class="cursor-pointer text-sm font-medium">${ecartees.length} patron${ecartees.length > 1 ? 's' : ''} que la fiche ne permet pas de trancher</summary>
-      <p class="mt-2 text-sm text-riviere-600 dark:text-riviere-300">Ils ne sont ni retenus ni écartés : la fiche ne dit pas assez pour décider. Fiez-vous aux photographies.</p>
-      <div class="mt-3 space-y-3">${ecartees.map(({ m, raisons, nommeeEauBasse }) => ficheHtml(m, { fenetre, raisons, nommeeEauBasse })).join('')}</div>
-    </details>`;
-  }
-
-  $('#resultats').innerHTML = html;
-}
-
-/* ─────────────── Onglet « Catalogue » ─────────────── */
-
 function rendCatalogue() {
   const q = etat.recherche.trim().toLowerCase();
   const liste = q
-    ? MOUCHES.filter((m) => [m.nom, m.origine, m.toilette, m.note].filter(Boolean).join(' ').toLowerCase().includes(q))
-    : MOUCHES;
+    ? FICHE.filter((m) => [m.nom, m.origine, m.toilette, m.note].filter(Boolean).join(' ').toLowerCase().includes(q))
+    : FICHE;
 
-  $('#catalogue').innerHTML = liste.length
-    ? liste.map((m) => ficheHtml(m)).join('')
-    : `<p class="rounded-lg border border-dashed border-riviere-300 p-6 text-center text-sm text-riviere-500 dark:border-riviere-700 dark:text-riviere-400">Rien ne correspond à « ${echappe(etat.recherche)} ».</p>`;
-}
-
-/* ─────────────── Onglet « Mon coffre » ─────────────── */
-
-function rendCoffre() {
-  $('#lecture-coffre').textContent = LECTURE_COFFRE;
-
-  $('#panneaux').innerHTML = COFFRE.map((p) => {
-    const total = p.familles.reduce((s, f) => s + f.n, 0);
-    const lignes = p.familles.map((f) => `
-      <li class="flex gap-3 border-t border-riviere-100 py-2.5 first:border-0 first:pt-0 dark:border-riviere-800">
-        <span class="mt-0.5 w-7 shrink-0 text-right font-titre text-base tabular-nums text-laque-600 dark:text-laque-300">${f.n}</span>
-        <span class="mt-1.5 flex shrink-0 gap-0.5">${f.teintes.map((c) => `<span class="h-3 w-3 rounded-sm ring-1 ring-black/15 dark:ring-white/20" style="background:${c}"></span>`).join('')}</span>
-        <span class="min-w-0">
-          <span class="block text-sm">${echappe(f.quoi)}</span>
-          ${f.note ? `<span class="block text-xs text-riviere-500 dark:text-riviere-400">${echappe(f.note)}</span>` : ''}
-        </span>
-      </li>`).join('');
-
-    return `<div class="overflow-hidden rounded-xl border border-riviere-200 bg-white dark:border-riviere-800 dark:bg-riviere-900">
-      <img src="${p.image}" alt="Panneau « ${echappe(p.titre)} » du coffre" loading="lazy" class="w-full">
-      <div class="p-4">
-        <h3 class="font-titre text-base">${echappe(p.titre)} <span class="font-texte text-sm font-normal text-riviere-500 dark:text-riviere-400">— environ ${total} mouches</span></h3>
-        <ul class="mt-2">${lignes}</ul>
+  $('#catalogue').innerHTML = liste.length ? liste.map((m) => `
+    <article class="rounded-xl border border-riviere-200 bg-white p-4 dark:border-riviere-800 dark:bg-riviere-900">
+      <div class="flex flex-wrap items-start justify-between gap-2">
+        <div class="min-w-0">
+          <h3 class="font-titre text-lg leading-tight">${echappe(m.nom)}</h3>
+          ${m.origine ? `<p class="text-sm text-riviere-600 dark:text-riviere-300">${echappe(m.origine)}</p>` : ''}
+        </div>
+        <div class="flex shrink-0 flex-wrap items-center gap-1.5">${badgeReserve(m)}</div>
       </div>
-    </div>`;
-  }).join('');
-
-  $('#rapprochements').innerHTML = RAPPROCHEMENTS.map((r) => {
-    const coche = etat.coffre.has(r.mouche);
-    return `<label class="flex cursor-pointer items-start gap-3 rounded-lg border border-riviere-200 bg-white p-3 dark:border-riviere-800 dark:bg-riviere-900">
-      <input type="checkbox" class="mt-1 h-4 w-4 shrink-0 accent-laque-500" data-coffre="${echappe(r.mouche)}" ${coche ? 'checked' : ''}>
-      <span class="min-w-0">
-        <span class="block text-sm font-medium">${echappe(r.mouche)}</span>
-        <span class="block text-sm text-riviere-600 dark:text-riviere-300">${echappe(r.pourquoi)}</span>
-      </span>
-    </label>`;
-  }).join('');
-
-  $('#inventaire').innerHTML = MOUCHES.map((m) => {
-    const coche = etat.coffre.has(m.nom);
-    return `<label class="flex cursor-pointer items-center gap-2.5 rounded-lg border border-riviere-200 bg-white px-3 py-2 text-sm dark:border-riviere-800 dark:bg-riviere-900">
-      <input type="checkbox" class="h-4 w-4 shrink-0 accent-laque-500" data-coffre="${echappe(m.nom)}" ${coche ? 'checked' : ''}>
-      <span class="truncate">${echappe(m.nom)}</span>
-    </label>`;
-  }).join('');
+      ${profilHtml(m)}
+      ${m.toilette ? `<p class="mt-3 text-sm leading-relaxed text-riviere-800 dark:text-papier-100">${echappe(m.toilette)}</p>` : ''}
+      ${m.note ? `<p class="mt-2 text-sm italic leading-relaxed text-riviere-600 dark:text-riviere-300">${echappe(m.note)}</p>` : ''}
+      ${!m.toilette && !m.note ? `<p class="mt-3 text-sm italic text-riviere-600 dark:text-riviere-300">Patron régional dont la fiche n'a pu vérifier la toilette dans une source fiable. Fiez-vous aux photographies.</p>` : ''}
+      <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+        ${m.hamecon ? `<span class="text-riviere-700 dark:text-riviere-300">Hameçon n° ${m.hamecon[0]} à ${m.hamecon[1]}</span>` : ''}
+        <a href="https://duckduckgo.com/?iax=images&amp;ia=images&amp;q=${encodeURIComponent('mouche à saumon "' + m.nom + '" fly')}"
+           target="_blank" rel="noopener noreferrer"
+           class="sans-impression inline-flex items-center gap-1 text-sm font-medium text-laque-600 hover:underline dark:text-laque-300">Voir des photographies <span aria-hidden="true">↗</span></a>
+      </div>
+    </article>`).join('')
+    : `<p class="rounded-lg border border-dashed border-riviere-300 p-6 text-center text-sm text-riviere-500 dark:border-riviere-700 dark:text-riviere-400">Rien ne correspond à « ${echappe(etat.recherche)} ».</p>`;
 }
 
 /* ─────────────── Navigation ─────────────── */
@@ -338,42 +269,42 @@ function montre(vue) {
     b.setAttribute('aria-selected', String(actif));
     $(`#${b.getAttribute('aria-controls')}`).hidden = !actif;
   }
-  if (vue === 'choisir') rendResultats();
-  if (vue === 'catalogue') rendCatalogue();
+  if (vue === 'jour') rendResultat();
   if (vue === 'coffre') rendCoffre();
+  if (vue === 'catalogue') rendCatalogue();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 /* ─────────────── Sauvegarde ─────────────── */
 
 function sauvegarde() {
-  const contenu = JSON.stringify({ application: 'choisir-sa-mouche-a-saumon', version: 2, date: new Date().toISOString(), coffre: [...etat.coffre], marques: marquesEnObjet() }, null, 2);
+  const contenu = JSON.stringify({
+    application: 'ma-mouche-du-jour', version: 1, date: new Date().toISOString(),
+    lieu: etat.lieu, ciel: etat.ciel, eau: etat.eau, activite: etat.activite,
+    absentes: [...etat.absentes]
+  }, null, 2);
   const blob = new Blob([contenu], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `mon-coffre-${new Date().toISOString().slice(0, 10)}.json`;
+  a.download = `mes-reglages-${new Date().toISOString().slice(0, 10)}.json`;
   a.click();
   URL.revokeObjectURL(a.href);
-  message(`${etat.coffre.size} patron(s) sauvegardé(s).`);
+  message('Réglages sauvegardés.');
 }
 
 function restaure(fichier) {
   const lecteur = new FileReader();
   lecteur.onload = () => {
     try {
-      const donnees = JSON.parse(lecteur.result);
-      if (!Array.isArray(donnees.coffre)) throw new Error('format');
-      const connus = new Set(MOUCHES.map((m) => m.nom));
-      const gardes = donnees.coffre.filter((n) => connus.has(n));
-      etat.coffre = new Set(gardes);
-      etat.marques = new Map();
-      for (const [nom, types] of Object.entries(donnees.marques || {})) {
-        if (connus.has(nom)) etat.marques.set(nom, new Set(types.filter((t) => t in TYPES_EAU)));
-      }
-      enregistre();
-      rendCoffre(); rendResultats();
-      const ignores = donnees.coffre.length - gardes.length;
-      message(`${gardes.length} patron(s) restauré(s)${ignores ? `, ${ignores} nom(s) inconnu(s) ignoré(s)` : ''}.`);
+      const d = JSON.parse(lecteur.result);
+      const connues = new Set(MOUCHES.map((m) => m.id));
+      if (d.lieu in LIEUX) etat.lieu = d.lieu;
+      if (d.ciel in CIELS) etat.ciel = d.ciel;
+      if (d.eau in EAUX) etat.eau = d.eau;
+      if (d.activite in ACTIVITES) etat.activite = d.activite;
+      etat.absentes = new Set((d.absentes || []).filter((id) => connues.has(id)));
+      enregistre(); rendChoix(); rendResultat(); rendCoffre();
+      message('Réglages restaurés.');
     } catch (e) {
       message("Ce fichier n'est pas une sauvegarde de cette application.");
     }
@@ -381,56 +312,33 @@ function restaure(fichier) {
   lecteur.readAsText(fichier);
 }
 
-let minuteurMessage;
+let minuteur;
 function message(txt) {
-  const el = $('#message-coffre');
+  const el = $('#message');
   el.textContent = txt;
-  clearTimeout(minuteurMessage);
-  minuteurMessage = setTimeout(() => { el.textContent = ''; }, 6000);
+  clearTimeout(minuteur);
+  minuteur = setTimeout(() => { el.textContent = ''; }, 6000);
 }
 
 /* ─────────────── Écoute ─────────────── */
 
 function branche() {
-  for (const b of $$('.onglet')) {
-    b.addEventListener('click', () => montre(b.id.slice(2)));
-  }
+  for (const b of $$('.onglet')) b.addEventListener('click', () => montre(b.id.slice(2)));
 
   document.addEventListener('click', (ev) => {
-    const niveau = ev.target.closest('[data-niveau]');
-    if (niveau) { etat.niveau = niveau.dataset.niveau; rendChoix(); rendResultats(); return; }
-
-    const clarte = ev.target.closest('[data-clarte]');
-    if (clarte) { etat.clarte = clarte.dataset.clarte; rendChoix(); rendResultats(); return; }
-
-    const teinte = ev.target.closest('[data-teinte]');
-    if (teinte) {
-      const t = teinte.dataset.teinte;
-      if (t === 'toutes') etat.teintes.clear();
-      else etat.teintes.has(t) ? etat.teintes.delete(t) : etat.teintes.add(t);
-      rendChoix(); rendResultats();
-      return;
-    }
-
-    const type = ev.target.closest('[data-type]');
-    if (type) {
-      etat.typeEau = type.dataset.type === 'tous' ? null : type.dataset.type;
-      rendChoix(); rendResultats();
-      return;
-    }
-
-    const marque = ev.target.closest('[data-marque]');
-    if (marque) {
-      const { mouche, marque: t } = marque.dataset;
-      const types = etat.marques.get(mouche) || new Set();
-      types.has(t) ? types.delete(t) : types.add(t);
-      types.size ? etat.marques.set(mouche, types) : etat.marques.delete(mouche);
-      enregistre();
-      // Toutes les étiquettes de cette mouche restent d'accord entre elles.
-      for (const autre of $$(`[data-marque="${t}"][data-mouche="${CSS.escape(mouche)}"]`)) {
-        autre.setAttribute('aria-pressed', String(types.has(t)));
+    for (const registre of ['lieu', 'ciel', 'eau', 'activite']) {
+      const b = ev.target.closest(`[data-${registre}]`);
+      if (b) {
+        etat[registre] = b.dataset[registre];
+        enregistre(); rendChoix(); rendResultat();
+        return;
       }
-      if (etat.vue === 'choisir' && etat.typeEau) rendResultats();
+    }
+
+    const filtre = ev.target.closest('[data-filtre]');
+    if (filtre) {
+      etat.filtre = filtre.dataset.filtre === 'tous' ? null : filtre.dataset.filtre;
+      rendCoffre();
       return;
     }
 
@@ -442,38 +350,25 @@ function branche() {
   });
 
   document.addEventListener('change', (ev) => {
-    const c = ev.target.closest('[data-coffre]');
+    const c = ev.target.closest('[data-presente]');
     if (c) {
-      const nom = c.dataset.coffre;
-      c.checked ? etat.coffre.add(nom) : etat.coffre.delete(nom);
-      enregistre();
-      // Toutes les cases portant ce nom restent d'accord entre elles.
-      for (const autre of $$(`[data-coffre="${CSS.escape(nom)}"]`)) autre.checked = c.checked;
-      $('#compte-coffre').textContent = etat.coffre.size ? `(${etat.coffre.size})` : '(vide)';
-      if (etat.vue === 'choisir') rendResultats();
+      const id = c.dataset.presente;
+      c.checked ? etat.absentes.delete(id) : etat.absentes.add(id);
+      enregistre(); rendCoffre();
       return;
     }
-
-    if (ev.target.id === 'filtre-coffre') { etat.filtreCoffre = ev.target.checked; rendResultats(); return; }
     if (ev.target.id === 'btn-restaure' && ev.target.files[0]) { restaure(ev.target.files[0]); ev.target.value = ''; }
   });
 
   $('#recherche').addEventListener('input', (ev) => { etat.recherche = ev.target.value; rendCatalogue(); });
   $('#btn-sauvegarde').addEventListener('click', sauvegarde);
-  $('#btn-imprimer').addEventListener('click', () => window.print());
-  $('#btn-vider').addEventListener('click', () => {
-    if (!etat.coffre.size) return message('Le coffre est déjà vide.');
-    if (!confirm('Décocher tous les patrons de votre coffre ?')) return;
-    etat.coffre.clear(); etat.marques.clear(); enregistre(); rendCoffre(); rendResultats();
-    message('Coffre vidé, marques comprises.');
-  });
 }
 
 /* ─────────────── Départ ─────────────── */
 
 charge();
 rendChoix();
-rendResultats();
+rendResultat();
 branche();
 
 if ('serviceWorker' in navigator) {
