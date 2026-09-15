@@ -34,6 +34,7 @@
             background:var(--carte); border:1px solid var(--bord); border-radius:14px; padding:1.1rem 1.25rem;
             transition:border-color .15s ease, transform .15s ease; }
   a.carte:hover { border-color:var(--accent); transform:translateY(-1px); }
+  a.carte + a.carte { margin-top:1rem; }
   a.carte img { width:52px; height:52px; border-radius:12px; flex:none; }
   .titre { font-weight:600; font-size:1.05rem; }
   .desc { color:var(--doux); font-size:.925rem; margin-top:.15rem; }
@@ -51,6 +52,15 @@
       <span class="titre">Ma mouche du jour</span>
       <span class="desc">Vous donnez les conditions du jour ; l'application sort de votre coffre la mouche
       qui convient, en photographie, avec la manière de la pêcher et l'endroit où la trouver dans la boîte.</span>
+    </span>
+  </a>
+
+  <a class="carte" href="arrosage/">
+    <img src="arrosage/assets/icones/icone-192.png" alt="">
+    <span>
+      <span class="titre">Le système d'arrosage, expliqué</span>
+      <span class="desc">Le contrôleur Hydro-Rain HRC 100-C, bouton par bouton : le schéma du boîtier,
+      neuf procédures pas à pas et un simulateur qui réagit comme le vrai appareil.</span>
     </span>
   </a>
 </main>

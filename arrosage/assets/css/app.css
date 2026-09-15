@@ -1,0 +1,387 @@
+/* ══════════════════════════════════════════════════════════════════════
+   Guide d'arrosage HRC 100-C
+   Système visuel « Broadsheet » : les valeurs (couleurs, espacements,
+   rayons) sont reprises telles quelles du système de design ; les polices
+   sont livrées dans le dépôt, aucune requête vers l'extérieur.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* — Source Serif 4, servie depuis assets/polices/ (variable, 200–900) — */
+@font-face {
+  font-family: "Source Serif 4"; font-style: normal; font-weight: 200 900; font-display: swap;
+  src: url(../polices/source-serif-4-var-latin.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Source Serif 4"; font-style: normal; font-weight: 200 900; font-display: swap;
+  src: url(../polices/source-serif-4-var-latin-ext.woff2) format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Source Serif 4"; font-style: italic; font-weight: 200 900; font-display: swap;
+  src: url(../polices/source-serif-4-italique-var-latin.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Source Serif 4"; font-style: italic; font-weight: 200 900; font-display: swap;
+  src: url(../polices/source-serif-4-italique-var-latin-ext.woff2) format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* — Jetons du système — */
+:root {
+  --color-bg: #f3f2f2;
+  --color-surface: #eae9e9;
+  --color-text: #201e1d;
+  --color-accent: #0088b0;
+  --color-accent-2: #d6006c;
+  --color-divider: color-mix(in srgb, #201e1d 16%, transparent);
+
+  --color-neutral-100: #f8f4f4;
+  --color-neutral-200: #eae7e7;
+  --color-neutral-300: #d7d3d3;
+  --color-neutral-400: #bab6b6;
+  --color-neutral-500: #9b9797;
+  --color-neutral-600: #7d7979;
+  --color-neutral-700: #605d5d;
+  --color-neutral-800: #444141;
+  --color-neutral-900: #2d2b2b;
+
+  --color-accent-100: #e9f8ff;
+  --color-accent-200: #cbeeff;
+  --color-accent-300: #99e0ff;
+  --color-accent-400: #62c5ee;
+  --color-accent-500: #38a6cf;
+  --color-accent-600: #1186ac;
+  --color-accent-700: #006786;
+  --color-accent-800: #004961;
+  --color-accent-900: #0a303e;
+
+  --font-heading: "Source Serif 4", Georgia, serif;
+  --font-heading-weight: 600;
+  --font-body: "Source Serif 4", Georgia, serif;
+
+  --space-1: 5.0px;
+  --space-2: 10.0px;
+  --space-3: 15.0px;
+  --space-4: 20.0px;
+  --space-6: 30.0px;
+  --space-8: 40.0px;
+
+  --radius-sm: 1px;
+  --radius-md: 2px;
+  --radius-lg: 4px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+  font-weight: 400;
+  -webkit-text-size-adjust: 100%;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+
+img { display: block; max-width: 100%; }
+figure { margin: 0; }
+
+button {
+  font: inherit; color: inherit; background: none; border: 0; padding: 0;
+  cursor: pointer; text-align: left;
+}
+button:hover { color: var(--color-accent-600); }
+
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+::selection { background: color-mix(in srgb, var(--color-accent) 30%, transparent); }
+
+/* — Traitement d'image : la trame de journal — */
+.halftone { position: relative; filter: grayscale(0.35) contrast(1.15); overflow: hidden; }
+.halftone::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: radial-gradient(circle, rgba(0,0,0,0.22) 30%, transparent 32%);
+  background-size: 3px 3px; mix-blend-mode: multiply;
+}
+
+/* — Boutons du système — */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  cursor: pointer; text-decoration: none;
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 14px; line-height: 1.2; color: var(--color-text);
+  background: transparent; border: 1px solid transparent;
+  padding: var(--space-2) calc(var(--space-3) * 1.2);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+.btn-primary { background: var(--color-accent); color: var(--color-bg); }
+.btn-primary:hover { background: var(--color-accent-600); color: var(--color-bg); }
+.btn-primary:active { background: var(--color-accent-700); }
+.btn-secondary { border-color: var(--color-divider); }
+.btn-secondary:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); color: var(--color-text); }
+.btn-secondary:active { background: color-mix(in srgb, var(--color-text) 14%, transparent); }
+
+/* — Étiquettes — */
+.tag {
+  display: inline-flex; align-items: center; font-size: 11px;
+  letter-spacing: 0.02em; padding: 3px 10px;
+  border-radius: calc(var(--radius-md) * 0.75);
+}
+.tag-accent { background: var(--color-accent-100); color: var(--color-accent-800); }
+
+/* ══════════════════════════════════════════════════════════════════════
+   L'application
+   ══════════════════════════════════════════════════════════════════════ */
+
+.app {
+  max-width: 430px; margin: 0 auto; min-height: 100vh;
+  min-height: 100svh;
+  display: flex; flex-direction: column; background: var(--color-bg);
+}
+#ecran { flex: 1; display: flex; flex-direction: column; }
+.espace { flex: 1; min-height: var(--space-8); }
+
+.kicker {
+  font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--color-neutral-700);
+}
+.kicker-ligne { display: flex; justify-content: space-between; }
+
+/* — Accueil A : le boîtier d'abord — */
+.accueil-a {
+  padding: var(--space-6) var(--space-4) 0;
+  display: flex; flex-direction: column; gap: var(--space-3);
+}
+.accueil-a h1 { font-size: 34px; line-height: 1.08; text-wrap: pretty; }
+.accueil-a p { margin: 0; font-size: 15px; color: var(--color-neutral-700); }
+
+/* — La photographie du boîtier — */
+.photo {
+  margin: var(--space-4) var(--space-4) 0;
+  aspect-ratio: 2.7; border-radius: var(--radius-md);
+}
+.photo img { width: 100%; height: 100%; object-fit: cover; }
+.photo-legende {
+  padding: var(--space-1) var(--space-4) 0; margin: 0;
+  font-size: 11px; color: var(--color-neutral-700);
+}
+
+/* — Accueil B : index de journal — */
+.accueil-b {
+  padding: var(--space-6) var(--space-4) var(--space-4);
+  display: flex; flex-direction: column; gap: var(--space-4);
+}
+.accueil-b h1 { font-size: 44px; line-height: 1.02; text-wrap: pretty; }
+.accueil-b p {
+  margin: 0; font-size: 16px; line-height: 1.5;
+  color: var(--color-neutral-800); text-wrap: pretty;
+}
+.accueil-b .liste-guides { gap: 2px; }
+.accueil-b .guide-ligne { font-size: 18px; }
+
+/* — Accueil C : aujourd'hui — */
+.accueil-c {
+  padding: var(--space-6) var(--space-4) var(--space-4);
+  display: flex; flex-direction: column; gap: var(--space-4);
+}
+.accueil-c h1 { font-size: 38px; line-height: 1.05; }
+.accueil-c h1 span { color: var(--color-accent-700); }
+.accueil-c p { margin: 0; font-size: 16px; color: var(--color-neutral-800); text-wrap: pretty; }
+.gestes { display: flex; flex-direction: column; gap: var(--space-1); margin-top: var(--space-2); }
+.geste { font-size: 20px; padding: var(--space-2) 0; }
+.geste span { color: var(--color-accent); }
+.lien-sim { margin-top: var(--space-3); font-size: 14px; color: var(--color-accent-700); }
+
+/* — Listes de guides — */
+.liste-guides-bloc {
+  padding: var(--space-6) var(--space-4) 0;
+  display: flex; flex-direction: column; gap: var(--space-2);
+}
+.liste-guides { display: flex; flex-direction: column; }
+.guide-ligne {
+  display: grid; grid-template-columns: 28px minmax(0, 1fr) auto;
+  gap: var(--space-2); align-items: baseline;
+  padding: var(--space-2) 0; font-size: 17px;
+}
+.guide-num { font-size: 12px; color: var(--color-accent-700); font-variant-numeric: tabular-nums; }
+.guide-duree { font-size: 12px; color: var(--color-neutral-600); }
+
+/* — En-tête d'un guide — */
+.guide-tete {
+  padding: var(--space-4) var(--space-4) 0;
+  display: flex; flex-direction: column; gap: var(--space-2);
+}
+.guide-tete .kicker-ligne { align-items: baseline; }
+.retour {
+  font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--color-accent-700);
+}
+.guide-tete h2 { font-size: 22px; line-height: 1.15; }
+.etape-texte {
+  font-size: 19px; line-height: 1.4; margin: var(--space-1) 0 0;
+  text-wrap: pretty; min-height: 80px;
+}
+
+/* — En-tête du simulateur — */
+.sim-tete {
+  padding: var(--space-4) var(--space-4) 0;
+  display: flex; flex-direction: column; gap: var(--space-1);
+}
+.sim-tete h2 { font-size: 22px; }
+.sim-tete p { margin: 0; font-size: 14px; color: var(--color-neutral-700); }
+.sim-tete p button { color: var(--color-accent-700); }
+
+/* — Le panneau : écran, boutons, cadran — */
+.panneau {
+  padding: var(--space-4) var(--space-4) 0;
+  display: flex; flex-direction: column; gap: var(--space-3);
+}
+.pan-haut {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-3); align-items: stretch;
+}
+.lcd {
+  background: var(--color-surface); border-radius: var(--radius-md);
+  padding: var(--space-3); min-height: 74px;
+  display: flex; align-items: center;
+  font-size: 22px; letter-spacing: .06em; text-transform: uppercase;
+  font-variant-numeric: tabular-nums; color: var(--color-neutral-900);
+  overflow: hidden; text-wrap: balance;
+}
+.pan-lcd-cote { display: flex; flex-direction: column; gap: var(--space-1); justify-content: center; }
+
+.bt {
+  border: 1px solid var(--color-neutral-400); background: transparent;
+  color: var(--color-text); border-radius: var(--radius-md);
+  text-align: center;
+}
+.bt:hover { color: var(--color-accent-600); }
+.bt.is-actif {
+  border-color: var(--color-accent);
+  background: var(--color-accent-100);
+  color: var(--color-accent-800);
+}
+.bt-mini {
+  padding: 6px 10px; font-size: 11px; letter-spacing: .06em;
+  text-transform: uppercase; min-height: 32px;
+}
+.bt-mini.bt-pluie { white-space: nowrap; }
+.bt-cote { padding: 8px 4px; min-height: 44px; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; }
+.bt-fleche { padding: 8px 4px; min-height: 44px; font-size: 16px; }
+.bt-signe { padding: 8px 4px; min-height: 44px; font-size: 20px; }
+.bt-enter { line-height: 1.2; }
+
+.pan-rangee {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--space-2); align-items: center;
+}
+.pan-cluster { display: flex; flex-direction: column; gap: 6px; width: 72px; }
+.pan-cluster-note {
+  font-size: 9px; letter-spacing: .08em; text-transform: uppercase;
+  text-align: center; color: var(--color-neutral-600);
+}
+
+.cadran { position: relative; width: 200px; height: 200px; margin: 0 auto; }
+.cadran-anneau { position: absolute; inset: 38px; border-radius: 50%; border: 1px solid var(--color-neutral-400); }
+.cadran-moyeu { position: absolute; inset: 72px; border-radius: 50%; background: var(--color-neutral-300); }
+.cadran-aiguille {
+  position: absolute; left: 50%; top: 50%; width: 2px; height: 62px;
+  margin-left: -1px; margin-top: -62px; background: var(--color-text);
+  transform-origin: 50% 100%; transition: transform .35s ease; border-radius: 1px;
+}
+.cadran-pos {
+  position: absolute; left: 50%; top: 50%; width: 64px; height: 40px;
+  margin-left: -32px; margin-top: -20px;
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  font-size: 10px; letter-spacing: .06em; text-transform: uppercase; line-height: 1.15;
+  color: var(--color-neutral-800);
+}
+.cadran-pos.is-actif { color: var(--color-accent-700); font-weight: 600; }
+
+.expl { min-height: 52px; display: flex; flex-direction: column; gap: 2px; }
+.expl-nom { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-accent-700); }
+.expl-texte { font-size: 15px; line-height: 1.45; color: var(--color-neutral-900); text-wrap: pretty; }
+
+/* — Navigation d'étapes — */
+.etapes-nav {
+  padding: var(--space-3) var(--space-4) 0;
+  display: flex; gap: var(--space-2); align-items: center;
+}
+.etapes-nav .btn { min-height: 44px; }
+.etapes-points { flex: 1; display: flex; gap: 4px; }
+.etapes-points i { flex: 1; height: 2px; background: var(--color-neutral-300); }
+.etapes-points i.is-fait { background: var(--color-accent); }
+
+/* — Le lexique du boîtier — */
+.lexique {
+  padding: var(--space-6) var(--space-4) 0;
+  display: flex; flex-direction: column; gap: var(--space-4);
+}
+.lexique-bloc { display: flex; flex-direction: column; gap: var(--space-2); }
+.zones { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.zones .tag { font-size: 13px; padding: 5px 12px; }
+.lexique-bloc p { margin: 0; font-size: 14px; line-height: 1.45; color: var(--color-neutral-800); text-wrap: pretty; }
+.lexique-ligne {
+  display: grid; grid-template-columns: 110px minmax(0, 1fr);
+  gap: var(--space-2); font-size: 14px; line-height: 1.4; padding: 4px 0;
+}
+.lexique-ligne b { font-weight: 600; letter-spacing: .02em; }
+.lexique-ligne span { color: var(--color-neutral-800); }
+
+/* — Aide : dépannage, fiche, réglages — */
+.aide {
+  padding: var(--space-6) var(--space-4) 0;
+  display: flex; flex-direction: column; gap: var(--space-6);
+}
+.aide-bloc { display: flex; flex-direction: column; gap: var(--space-3); }
+.aide-bloc h2 { font-size: 28px; line-height: 1.1; }
+.panne { display: flex; flex-direction: column; gap: 4px; }
+.panne-titre { font-size: 17px; font-weight: 600; line-height: 1.3; }
+.panne-cause {
+  font-size: 14px; line-height: 1.45; color: var(--color-neutral-800);
+  padding-left: 14px; text-indent: -14px;
+}
+.fiche-bloc { display: flex; flex-direction: column; gap: var(--space-2); }
+.fiche-ligne {
+  display: grid; grid-template-columns: 120px minmax(0, 1fr);
+  gap: var(--space-2); font-size: 14px; line-height: 1.4;
+}
+.fiche-ligne span:first-child { color: var(--color-neutral-700); }
+.choix-accueil { display: flex; flex-direction: column; }
+.choix-ligne {
+  display: grid; grid-template-columns: 18px minmax(0, 1fr);
+  gap: var(--space-2); align-items: baseline;
+  padding: var(--space-2) 0; font-size: 17px;
+}
+.choix-ligne i { font-style: normal; color: var(--color-accent-700); }
+.choix-ligne small { display: block; font-size: 13px; color: var(--color-neutral-700); line-height: 1.4; }
+.choix-ligne.is-actif b { color: var(--color-accent-700); }
+.choix-ligne b { font-weight: 400; }
+
+/* — Navigation du bas — */
+.nav-bas {
+  position: sticky; bottom: 0; background: var(--color-bg);
+  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
+  padding: var(--space-2) var(--space-2) var(--space-4);
+  padding-bottom: calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
+}
+.nav-bas button {
+  min-height: 44px; font-size: 13px; text-align: center;
+  color: var(--color-neutral-700);
+}
+.nav-bas button.is-actif { color: var(--color-accent-700); }
+
+@media (prefers-reduced-motion: reduce) {
+  .cadran-aiguille { transition: none; }
+}

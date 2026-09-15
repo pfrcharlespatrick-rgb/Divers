@@ -126,3 +126,81 @@ Toilettes vérifiées pour la Silver Rat, la Rusty Rat, la Cosseboom, la Godbout
 et la Black Dose d'après Frédéric Lévesque, *Salmo Salar* n° 16, avril 1989,
 repris par Fabri-Mouches.ca. Origine de la Pompier d'après Pierre Saumur, même
 source.
+
+---
+
+# Le système d'arrosage, expliqué
+
+**→ [Ouvrir l'application](https://pfrcharlespatrick-rgb.github.io/Divers/arrosage/)**
+
+Le contrôleur d'arrosage **Hydro-Rain HRC 100-C** (modèle 04056, 6 stations),
+expliqué bouton par bouton. Écrit pour qui n'a jamais ouvert la porte du
+boîtier : un locataire, un gardien de maison, vous en début de saison.
+
+## Les cinq onglets
+
+| Onglet | À quoi ça sert |
+|---|---|
+| **Accueil** | Trois présentations au choix — voir plus bas. |
+| **Boîtier** | La photographie de votre boîtier, le schéma de la façade, et le lexique complet : chaque bouton, chaque position du cadran, vos cinq zones. Touchez un élément, l'application dit ce qu'il fait. |
+| **Guides** | Neuf procédures pas à pas : horloge et date, départs et durées, arrosage manuel, cycle de test, délai de pluie, budget d'eau, programmes A/B/C, hivernage, pile et câblage. À chaque étape, le bouton à presser s'allume et l'écran montre ce que vous devriez voir. |
+| **Simulateur** | Le cadran, l'écran et les boutons réagissent comme le vrai appareil, d'après le manuel. Les minutes d'arrosage défilent en accéléré. Rien n'est envoyé au contrôleur : on s'entraîne sans rien casser. |
+| **Aide** | Le dépannage — six pannes et leurs causes —, la fiche technique, et le choix de l'écran d'accueil. |
+
+## Vos zones
+
+Cinq zones raccordées, numérotées 1 à 5. Sur l'écran du boîtier elles
+apparaissent comme « ST » suivi du numéro (ST 1 = zone 1). La station 6 n'est
+reliée à aucune vanne : sa durée reste à 0, et l'application le rappelle partout
+où la question se pose.
+
+## Les trois écrans d'accueil
+
+Le même guide, trois entrées en matière. Le choix se fait dans l'onglet **Aide**
+et il est retenu sur l'appareil.
+
+- **Le boîtier d'abord** — la photographie et le schéma interactif ouvrent
+  l'application, la liste des guides suit.
+- **Index de journal** — un grand titre, un chapeau, les neuf procédures numérotées.
+- **Aujourd'hui** — la position du cadran en grand et les quatre gestes fréquents :
+  pluie, arrosage manuel, test, hivernage.
+
+## Ce que ça vaut, et ce que ça ne fait pas
+
+Le contenu est tiré du manuel Hydro-Rain du HRC 100-C. Le simulateur imite le
+comportement décrit dans ce manuel — il ne communique avec aucun appareil, et un
+vrai boîtier peut réagir différemment s'il est d'une autre révision.
+
+Le seul réglage conservé est l'écran d'accueil choisi (`localStorage`, sur votre
+appareil). Aucun compte, aucun serveur, aucune requête sortante : la feuille de
+style, la police et la photographie sont livrées dans le dépôt. Sur téléphone,
+« Ajouter à l'écran d'accueil » installe le guide ; il fonctionne ensuite sans
+réseau, devant le boîtier.
+
+## Sous le capot
+
+HTML et JavaScript simples, sans cadre applicatif ni étape de compilation.
+Habillage repris du système visuel *Broadsheet* : papier clair, texte en Source
+Serif 4, cyan pour tout ce qui se touche, et la hiérarchie portée par la taille
+et le blanc plutôt que par des cadres. La photographie du boîtier est tramée
+comme une image de journal ; ses métadonnées (dont la position GPS de la prise de
+vue) ont été retirées.
+
+```
+arrosage/
+├── index.html                       l'application
+├── sw.js                            service worker (mode hors ligne)
+├── manifest.webmanifest             installation sur l'écran d'accueil
+└── assets/
+    ├── css/app.css                  jetons Broadsheet et mise en page
+    ├── polices/                     Source Serif 4, en woff2
+    ├── js/donnees.js                guides, lexique, dépannage, fiche
+    ├── js/app.js                    l'interface et le simulateur
+    ├── img/boitier.jpg              la photographie du boîtier
+    └── icones/
+```
+
+## Source
+
+Manuel du contrôleur *Hydro-Rain HRC 100-C*, modèle 04056. Assistance
+Hydro-Rain : 1-888-493-7672.
